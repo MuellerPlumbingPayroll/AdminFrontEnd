@@ -1,52 +1,51 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
-import Sidebar from 'react-sidebar';
+import classNames from 'classnames';
 import SidebarContent from './partials/SideBarContent';
-import '../stylesheets/App.css';
-
+import '../stylesheets/vars.scss';
+import 'primereact/resources/themes/nova-light/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
 
 // eslint-disable-next-line no-undef
-const mql = window.matchMedia('(min-width: 800px)');
+
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      sidebarDocked: mql.matches,
-      sidebarOpen: false,
+      layoutMode: 'static',
+      layoutColorMode: 'dark',
+      mobileMenuActive: false,
     };
-
-    this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
-    this.onSetSidebarOpen = this.onSetSidebarOpen.bind(this);
   }
 
-  componentWillMount() {
-    mql.addListener(this.mediaQueryChanged);
+  isDesktop = () => {
+    return window.innerWidth > 1024;
   }
 
-  componentWillUnmount() {
-    this.state.mql.removeListener(this.mediaQueryChanged);
+  componentDidUpdate = ()=> {
+    if (this.state.mobileMenuActive) { this.addClass(document.body, 'body-overflow-hidden'); } else { this.removeClass(document.body, 'body-overflow-hidden'); }
   }
-
-  onSetSidebarOpen(open) {
-    this.setState({ sidebarOpen: open });
-  }
-
-  mediaQueryChanged() {
-    this.setState({ sidebarDocked: mql.matches, sidebarOpen: false });
-  }
-
 
   render() {
-    const sidebarContent = <SidebarContent />;
+    const listOf = [
+      { label: 'Manage Employees', icon: 'pi pi-fw pi-users' },
+      { label: 'Manage Jobs', icon: 'pi pi-fw pi-home' },
+      { label: 'Manage Job Codes', icon: 'pi pi-fw pi-key' },
+      { label: 'Download Time Sheets', icon: 'pi pi-fw pi-calendar' },
+    ];
+  
+    const wrapperClass = classNames('layout-wrapper', {
+      'layout-static': this.state.layoutMode === 'static',
+      'layout-mobile-sidebar-active': this.state.mobileMenuActive,
+    });
+    const sidebarClassName = classNames('layout-sidebar', { 'layout-sidebar-dark': this.state.layoutColorMode === 'dark' });
     return (
-      <Sidebar
-        sidebar={sidebarContent}
-        open={this.state.sidebarOpen}
-        docked={this.state.sidebarDocked}
-        onSetOpen={this.onSetSidebarOpen}
-      >
-        <b>Main content</b>
-      </Sidebar>
+      <div className={wrapperClass}>
+        <div className={sidebarClassName}>
+          <SidebarContent model={listOf}/>
+        </div>
+      </div>
     );
   }
 }
