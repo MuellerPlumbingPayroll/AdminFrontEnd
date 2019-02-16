@@ -1,8 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import classNames from 'classnames';
-import { Sidebar } from 'primereact/sidebar';
-import { Button } from 'primereact/button';
 import SidebarContent from './partials/SideBarContent';
 import '../stylesheets/vars.scss';
 import 'primereact/resources/themes/nova-light/theme.css';
