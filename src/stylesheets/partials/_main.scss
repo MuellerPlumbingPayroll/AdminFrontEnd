@@ -25,12 +25,16 @@ a {
 
     .layout-topbar {
         position: fixed;
-        height: 50px;
-        padding: .7em 1.5em 0em 1.5em;
-        color: #ffffff;
+        height: 90px;
+        padding: 0.25em 1.5em 0em 1.5em;
+        background-color: #b22222;
+        font-size: 100px;
+        size: 100px;
+        color: #D3D3Df;
+        text-align: center;
         z-index: 999;
         right: 0;
-        @include linear-gradient-left($topbarLeftBgColor,$topbarRightBgColor);
+        //@include linear-gradient-left($topbarLeftBgColor,$topbarRightBgColor);
         @include transition(left $transitionDuration);
 
         .layout-topbar-icons {
@@ -175,6 +179,7 @@ a {
     }
 
     .layout-sidebar {
+        padding: 35px;
         position: fixed;
         width: 250px;
     	height: 100%;
@@ -443,7 +448,7 @@ a {
 
     .layout-main {
         @include transition(margin-left $transitionDuration);
-        padding: 66px 16px 16px 16px;
+        padding: 100px 16px 16px 16px;
     }
 
     .layout-footer {
