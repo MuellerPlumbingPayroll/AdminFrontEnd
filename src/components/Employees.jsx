@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Button } from 'primereact/button';
 import { Calendar } from 'primereact/calendar';
 import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column'
+import { Column } from 'primereact/column';
 import '../stylesheets/vars.scss';
 import 'primereact/resources/themes/nova-light/theme.css';
 import 'primereact/resources/primereact.min.css';
@@ -17,13 +17,12 @@ class Employees extends React.Component {
     super(props);
     this.state = {
       layoutMode: 'static',
-      //layoutColorMode: 'dark',
+      // layoutColorMode: 'dark',
       mobileMenuActive: false,
     };
   }
 
   render() {
-  
     const wrapperClass = classNames('layout-wrapper', {
       'layout-static': this.state.layoutMode === 'static',
       'layout-mobile-sidebar-active': this.state.mobileMenuActive,
@@ -31,29 +30,29 @@ class Employees extends React.Component {
     const sidebarClassName = classNames('layout-sidebar', { 'layout-sidebar-dark': this.state.layoutColorMode === 'dark' });
     const mainPart = classNames('layout-main');
     const maDate = new Date();
-    const miDate = new Date(maDate.getFullYear()-1, 0, 1);
-    let testInfo = ["Brian","test@gmail.com","","" ]
+    const miDate = new Date(maDate.getFullYear() - 1, 0, 1);
+    const testInfo = ['Brian', 'test@gmail.com', '', ''];
     return (
       <div className={wrapperClass}>
         <div className={mainPart}>
-            <div class="p-g p-fluid dashboard">
-                <h2>Manage Employees</h2>
-                <h4></h4>
-                <div class="p-g-12 p-md-9">
-                  <div class="dataTable">
-                    <DataTable value={testInfo}>
-                        <Column field="name" header="Name" filter={true} filterMatchMode={"contains"} filterType={"inputtext"}/>
-                        <Column field="email" header="Email"/>
-                        <Column field="del" header="Delete " selectionMode="multiple" style={{textAlign:'center'}}/>
-                    </DataTable>
-                  </div>  
-                </div>
-                <div class="p-g-12 p-md-3">
-                  <div class="deleteEmps">
-                    <Button label="Delete Selected" className="p-button-primary" />
-                  </div>
-                </div>
+          <div className="p-g p-fluid dashboard">
+            <h2>Manage Employees</h2>
+            <h4 />
+            <div className="p-g-12 p-md-9">
+              <div className="dataTable">
+                <DataTable value={testInfo}>
+                  <Column field="name" header="Name" filter filterMatchMode="contains" filterType="inputtext" />
+                  <Column field="email" header="Email" />
+                  <Column field="del" header="Delete " selectionMode="multiple" style={{ textAlign: 'center' }} />
+                </DataTable>
+              </div>
             </div>
+            <div className="p-g-12 p-md-3">
+              <div className="deleteEmps">
+                <Button label="Delete Selected" className="p-button-primary" />
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
