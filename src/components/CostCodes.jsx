@@ -21,8 +21,8 @@ class CostCodes extends React.Component {
       layoutMode: 'static',
       //layoutColorMode: 'dark',
       mobileMenuActive: false,
-      code: null,
-      desc: null,
+      code: "",
+      desc: "",
       visible: false,
       sales: [
         {code: 'Apple', desc: '51%', test: '40%'},
@@ -47,6 +47,7 @@ class CostCodes extends React.Component {
         {code: 'q', desc: '83%', test: '96%'},
         {code: 'r', desc: '38%', test: '5%'}
       ],
+      activity: false
     };
     this.onHideYes = this.onHideYes.bind(this);
     this.onHide = this.onHide.bind(this);
@@ -61,10 +62,12 @@ class CostCodes extends React.Component {
   }
 
   onHideYes(){
-    if(this.state.code != null && this.state.desc != null){
+    if(this.state.code != "" && this.state.desc != ""){
       //Add here
+      this.setState({activity: true});
     } else {
       //Warn here 
+      this.setState({activity: false});
     }  
   }
   
@@ -118,7 +121,7 @@ class CostCodes extends React.Component {
                     </span>  
                   </Dialog>
                   <div style={{paddingBottom: '5px'}}>
-                    <Button label="Add Cost Code" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>
+                    <Button id="addB" label="Add Cost Code" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>
                   </div>
                   <div>
                     <DataTable value={this.state.sales} scrollable={true}scrollHeight="300px"selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
@@ -130,10 +133,10 @@ class CostCodes extends React.Component {
                 </div>
                 <div>
                   <div className="deleteCodes" style={{paddingBottom: '5px', paddingTop: '5px'}}>
-                    <Button label="Delete Selected" className="p-button-primary" onClick={this.Delete}/>
+                    <Button id="deleteB" label="Delete Selected" className="p-button-primary" onClick={this.Delete}/>
                   </div>
                   <div className="saveCodes" style={{paddingBottom: '5px'}}>
-                    <Button label="Save Changes" className="p-button-success" style={{padding: '5px'}}/>
+                    <Button id="saveB" label="Save Changes" className="p-button-success" style={{padding: '5px'}}/>
                 </div>
                 </div>
             </div>

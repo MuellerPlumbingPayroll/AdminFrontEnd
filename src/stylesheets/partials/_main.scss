@@ -179,7 +179,7 @@ a {
     }
 
     .layout-sidebar {
-        padding: 35px;
+        padding: 0px;
         position: fixed;
         width: 250px;
     	height: 100%;
@@ -190,7 +190,9 @@ a {
         @include transition(left $transitionDuration);
         @include linear-gradient($menuBgColorFirst, $menuBgColorLast);
         @include shadow(0 0 6px 0 rgba(0, 0, 0, 0.16));
-
+        .p-menu {
+            width: 100%;
+        }
         .layout-logo {
             text-align: center;
             margin-top: 24px;   
@@ -237,7 +239,6 @@ a {
 
                 li {
                     button {
-                        width: 100%;
                         padding: 1em 15px 1em 1em;
                         border: 0 none;
                         border-radius: 0;
@@ -564,4 +565,5 @@ a {
     .body-overflow-hidden {
         overflow: hidden;
     }
+
 }

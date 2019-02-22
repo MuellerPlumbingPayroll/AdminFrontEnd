@@ -14,8 +14,6 @@ class Welcome extends React.Component {
     super(props);
     this.state = {
       layoutMode: 'static',
-      startDate: this.lastPayPeriodStart(),
-      endDate: this.lastPayPeriodEnd()
     };
     // event handlers
     this.lastPayPeriodStart = this.lastPayPeriodStart.bind(this);
@@ -38,9 +36,7 @@ class Welcome extends React.Component {
   }
 
 
-  lastPayPeriodStart(){
-    let today = new Date();
-    //let today = new Date(today1.getFullYear(), 6, 5);
+  lastPayPeriodStart(today = new Date()){
     let sd = new Date();
     let day = today.getDay();
     if(day===0){
@@ -61,8 +57,7 @@ class Welcome extends React.Component {
     return sd;
   }
 
-  lastPayPeriodEnd(){
-    let today = new Date();
+  lastPayPeriodEnd(today = new Date()) {
     let ed = new Date();
     let day = today.getDay();
     if(day===0){
@@ -101,7 +96,7 @@ class Welcome extends React.Component {
             <div>
                 <h2 style={{textAlign: 'center'}}> Current Pay Period</h2>
                 <div style={{fontSize: '30px', textAlign: 'center'}}>
-                    {this.convertToString(this.state.startDate)} - {this.convertToString(this.state.endDate)}
+                    {this.convertToString(this.lastPayPeriodStart())} - {this.convertToString(this.lastPayPeriodEnd())}
                 </div>
             </div>  
         </div>

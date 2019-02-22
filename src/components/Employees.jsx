@@ -23,8 +23,9 @@ class Employees extends React.Component {
       selected:[],
       mode: 'table',
       visible: false,
-      name: null,
-      email: null,
+      name: "",
+      email: "",
+      activity: false,
       sales: [
         {name: 'Apple', email: '51%', test: '40%'},
         {name: 'Samsung', email: '83%', test: '96%'},
@@ -63,29 +64,31 @@ class Employees extends React.Component {
   }
 
   onHideYes(){
-    if(this.state.name != null && this.state.email != null){
+    if(this.state.name != "" && this.state.email != ""){
       //Add here
+      this.setState({activity: true});
     } else {
       //Warn here 
-    }  
-    }
-    onEditorValueChange(props, value) {
-        let updatedSales = [...this.state.sales];
-        updatedSales[props.rowIndex][props.field] = value;
-        this.setState({sales: updatedSales});
-    }
+      this.setState({activity: false});
+    } 
+  }
+  onEditorValueChange(props, value) {
+      let updatedSales = [...this.state.sales];
+      updatedSales[props.rowIndex][props.field] = value;
+      this.setState({sales: updatedSales});
+  }
 
-    delete(){
-        //Delete Stuff
-    }
+  delete(){
+      //Delete Stuff
+  }
 
-    nameEditor(props) {
-        return <InputText type="text" value={this.state.sales[props.rowIndex]['name']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
-    }
-  
-    emailEditor(props) {
-      return <InputText type="text" value={this.state.sales[props.rowIndex]['email']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
-    }
+  nameEditor(props) {
+      return <InputText type="text" value={this.state.sales[props.rowIndex]['name']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
+  }
+
+  emailEditor(props) {
+    return <InputText type="text" value={this.state.sales[props.rowIndex]['email']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
+  }
 
   render() {
   
@@ -117,7 +120,7 @@ class Employees extends React.Component {
                         </span>  
                     </Dialog>
                   <div style={{paddingBottom: '5px'}}>
-                    <Button label="Add Employee" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>
+                    <Button id="addB" label="Add Employee" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>
                   </div>
                   <div>
                     <DataTable value={this.state.sales} scrollable={true}scrollHeight="300px"selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
@@ -128,11 +131,11 @@ class Employees extends React.Component {
                   </div>  
                 </div>
                 <div>
-                  <div className="deleteEmps" style={{paddingBottom: '5px', paddingTop: '5px'}}>
-                    <Button label="Delete Selected" className="p-button-primary" onClick={this.delete}/>
+                  <div style={{paddingBottom: '5px', paddingTop: '5px'}}>
+                    <Button id="deleteB" label="Delete Selected" className="p-button-primary" onClick={this.delete}/>
                   </div>
-                  <div className="deleteCodes" style={{paddingBottom: '5px'}}>
-                    <Button label="Save Changes" className="p-button-success" style={{padding: '5px'}}/>
+                  <div style={{paddingBottom: '5px'}}>
+                    <Button id="saveB" label="Save Changes" className="p-button-success" style={{padding: '5px'}}/>
                 </div>
                 </div>
             </div>

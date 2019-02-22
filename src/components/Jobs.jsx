@@ -45,8 +45,8 @@ class Jobs extends React.Component {
           {clientName: 'r', address: '38%', isActive: false}
         ],
         visible: false,
-        client: null,
-        address: null,
+        client: "",
+        address: "",
         activity: false,
     };
     this.isActive = this.isActive.bind(this);
@@ -82,7 +82,7 @@ class Jobs extends React.Component {
     this.setState({sales: updatedSales});
   }
   onHideYes(){
-      if(this.state.client != null && this.state.address != null){
+      if(this.state.client != "" || this.state.address != ""){
         //Add here
         this.setState({activity: false});
       } else {
@@ -149,7 +149,7 @@ class Jobs extends React.Component {
                     </span>  
                   </Dialog>
                   <div style={{paddingBottom: '5px'}}>
-                    <Button label="Add Job" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>
+                    <Button id="addB" label="Add Job" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>
                   </div>
                 <div>
                   <DataTable value={this.state.sales} scrollable={true}scrollHeight="300px" selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
@@ -163,10 +163,10 @@ class Jobs extends React.Component {
               </div>
               <div>
                 <div className="deleteCodes" style={{paddingBottom: '5px', paddingTop: '5px'}}>
-                  <Button label="Delete Selected" className="p-button-primary" onClick={this.delete}/>
+                  <Button id="deleteB" label="Delete Selected" className="p-button-primary" onClick={this.delete}/>
                 </div>
                 <div className="saveChanges" style={{paddingBottom: '5px'}}>
-                  <Button label="Save Changes" className="p-button-success" style={{padding: '5px'}}/>
+                  <Button id="saveB" label="Save Changes" className="p-button-success" style={{padding: '5px'}}/>
                 </div>
               </div>
             </div>
