@@ -72,11 +72,9 @@ class App extends React.Component {
         <div className={sidebarClassName}>
           <Menu model={this.state.listOf}/>
         </div>
-          {this.renderPage()}
         <div>
+          {this.renderPage()}
         </div>
-        {this.renderPage()}
-        <div />
       </div>
     );
   }
