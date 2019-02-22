@@ -46,17 +46,8 @@ class App extends React.Component {
     } else {
       return <div>Couldn't find page</div>
     }
-    return <div>Couldn't find page</div>;
   }
 
-  /*
-  isDesktop = () => {
-    return window.innerWidth > 1024;
-  }
-  componentDidUpdate = ()=> {
-    if (this.state.mobileMenuActive) { this.addClass(document.body, 'body-overflow-hidden'); } else { this.removeClass(document.body, 'body-overflow-hidden'); }
-  }
-*/
   render() {
     const wrapperClass = classNames('layout-wrapper', {
       'layout-static': this.state.layoutMode === 'static',

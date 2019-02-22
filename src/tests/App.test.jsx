@@ -211,6 +211,13 @@ describe('TimeSheets', ()=> {
     const inst = comp.instance();
     expect(comp.state('startDate')).toBe(null);
     expect(comp.state('endDate')).toBe(null);
+
+    comp.setState({todayDay: new Date(2019, 0, 3)});
+    inst.lastPayPeriod();
+    expect(comp.state('startDate')).toEqual(new Date(2018, 11, 26));
+    expect(comp.state('endDate')).toEqual(new Date(2019, 0, 1));
+
+    comp.setState({todayDay: new Date(2019, 1, 21)});
     inst.lastPayPeriod();
     expect(comp.state('startDate')).toEqual(new Date(2019, 1, 13));
     expect(comp.state('endDate')).toEqual(new Date(2019, 1, 19));
