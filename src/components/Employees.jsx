@@ -106,7 +106,7 @@ class Employees extends React.Component {
             <div>
                 <div style={{textAlign: 'center', fontSize: '30px'}}>Manage Employees</div>
                 <div>
-                    <Dialog header="Header Text" footer={footer} visible={this.state.visible} style={{width: '50vw'}} modal={true} onHide={this.onHide}>
+                    <Dialog header="Add Employee" footer={footer} visible={this.state.visible} style={{width: '50vw'}} modal={true} onHide={this.onHide}>
                         <span style={{paddingTop:'25px', display: 'block'}}>
                             <label style={{padding: '10px'}}>Name</label>
                             <InputText id="in" value={this.state.name} onChange={(e) => this.setState({name: e.target.value})} />
