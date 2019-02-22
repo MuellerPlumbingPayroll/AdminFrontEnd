@@ -52,7 +52,6 @@ class CostCodes extends React.Component {
     this.onHideYes = this.onHideYes.bind(this);
     this.onHide = this.onHide.bind(this);
     this.delete = this.delete.bind(this);
-    this.codeEditor = this.codeEditor.bind(this);
     this.descEditor = this.descEditor.bind(this);
     this.onEditorValueChange = this.onEditorValueChange.bind(this);
   }
@@ -81,9 +80,6 @@ class CostCodes extends React.Component {
     this.setState({sales: updatedSales})
   }
 
-  codeEditor(props) {
-      return <InputText type="text" value={this.state.sales[props.rowIndex]['code']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
-  }
 
   descEditor(props) {
     return <InputText type="text" value={this.state.sales[props.rowIndex]['desc']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
@@ -125,7 +121,7 @@ class CostCodes extends React.Component {
                   </div>
                   <div>
                     <DataTable value={this.state.sales} scrollable={true}scrollHeight="300px"selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
-                            <Column field="code" header="Code" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} editor={this.codeEditor}/>
+                            <Column field="code" header="Code" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} />
                             <Column field="desc" header="Description" editor={this.descEditor}/>
                             <Column selectionMode="multiple" field="del" header="Select " style={{textAlign:'center'}} />
                         </DataTable>

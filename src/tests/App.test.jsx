@@ -101,12 +101,6 @@ describe('CostCodes', ()=> {
     inst.onEditorValueChange({rowIndex: 0,field: 'code'}, 'Test');
     expect(comp.state('sales')[0].code).toEqual("Test");
   });
-  it('should call codeEditor', () => {
-    const comp = shallow(<CostCodes />);
-    const inst = comp.instance();
-    const props = {rowIndex: 0};
-    expect(inst.codeEditor(props)).toBeDefined();
-  });
   it('should call descEditor', () => {
     const comp = shallow(<CostCodes />);
     const inst = comp.instance();
