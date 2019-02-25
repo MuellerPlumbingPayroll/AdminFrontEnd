@@ -25,12 +25,16 @@ a {
 
     .layout-topbar {
         position: fixed;
-        height: 50px;
-        padding: .7em 1.5em 0em 1.5em;
-        color: #ffffff;
+        height: 90px;
+        padding: 0.25em 1.5em 0em 1.5em;
+        background-color: #b22222;
+        font-size: 100px;
+        size: 100px;
+        color: #D3D3Df;
+        text-align: center;
         z-index: 999;
         right: 0;
-        @include linear-gradient-left($topbarLeftBgColor,$topbarRightBgColor);
+        //@include linear-gradient-left($topbarLeftBgColor,$topbarRightBgColor);
         @include transition(left $transitionDuration);
 
         .layout-topbar-icons {
@@ -175,6 +179,7 @@ a {
     }
 
     .layout-sidebar {
+        padding: 0px;
         position: fixed;
         width: 250px;
     	height: 100%;
@@ -185,7 +190,9 @@ a {
         @include transition(left $transitionDuration);
         @include linear-gradient($menuBgColorFirst, $menuBgColorLast);
         @include shadow(0 0 6px 0 rgba(0, 0, 0, 0.16));
-
+        .p-menu {
+            width: 100%;
+        }
         .layout-logo {
             text-align: center;
             margin-top: 24px;   
@@ -232,7 +239,6 @@ a {
 
                 li {
                     button {
-                        width: 100%;
                         padding: 1em 15px 1em 1em;
                         border: 0 none;
                         border-radius: 0;
@@ -443,7 +449,7 @@ a {
 
     .layout-main {
         @include transition(margin-left $transitionDuration);
-        padding: 66px 16px 16px 16px;
+        padding: 100px 16px 16px 16px;
     }
 
     .layout-footer {
@@ -559,4 +565,5 @@ a {
     .body-overflow-hidden {
         overflow: hidden;
     }
+
 }
