@@ -17,7 +17,6 @@ import Jobs from './Jobs';
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.renderPage = this.renderPage.bind(this);
     this.state = {
       layoutMode: 'static',
       // layoutColorMode: 'dark',
@@ -32,7 +31,7 @@ class App extends React.Component {
     };
   }
 
-    renderPage() {
+    renderPage = () => {
     if(this.state.mode === 'welcome'){
       return <Welcome/>;
     } else if(this.state.mode === 'timesheets'){

@@ -46,15 +46,9 @@ class TimeSheets extends React.Component {
  
       ],
     };
-    // event handlers
-    this.allClicked = this.allClicked.bind(this);
-    this.restrictDate = this.restrictDate.bind(this);
-    this.lastPayPeriod = this.lastPayPeriod.bind(this);
-    this.goBackAYear = this.goBackAYear.bind(this);
-    this.checkDownload = this.checkDownload.bind(this);
   }
   
-  allClicked(){
+  allClicked = () => {
     if(this.state.selected.length === 0){
       this.setState({selected: this.state.sales});
     } else {
@@ -62,14 +56,14 @@ class TimeSheets extends React.Component {
     }
   }
 
-  restrictDate() {
+  restrictDate = () => {
     if (this.state.startDate != null) {
       return this.state.startDate;
     }
     return new Date((new Date()).getFullYear() - 1, 0, 1);
   }
 
-  goBackAYear(date, past) {
+  goBackAYear = (date, past) => {
     if ((date.getDate() <= past) && (date.getMonth() === 0)) {
       return new Date(date.getFullYear() - 1, 11, (31 - (past - date.getDate())));
     } if (date.getDay() < past) {
@@ -80,7 +74,7 @@ class TimeSheets extends React.Component {
   }
 
 
-  lastPayPeriod(){
+  lastPayPeriod = () => {
     let today = this.state.todayDay;
     let sd = new Date();
     let ed = new Date();
@@ -110,7 +104,7 @@ class TimeSheets extends React.Component {
     this.setState({startDate: sd, endDate: ed});
   }
 
-  checkDownload(){
+  checkDownload = () => {
     if(this.state.selected.length === 0){
       this.setState({errorEmps: true});
     } if((this.state.startDate === null) || (this.state.endDate === null)){

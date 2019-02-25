@@ -49,18 +49,13 @@ class CostCodes extends React.Component {
       ],
       activity: false
     };
-    this.onHideYes = this.onHideYes.bind(this);
-    this.onHide = this.onHide.bind(this);
-    this.delete = this.delete.bind(this);
-    this.descEditor = this.descEditor.bind(this);
-    this.onEditorValueChange = this.onEditorValueChange.bind(this);
   }
 
-  onHide(){
+  onHide = () => {
     this.setState({visible: false});
   }
 
-  onHideYes(){
+  onHideYes = () => {
     if(this.state.code != "" && this.state.desc != ""){
       //Add here
       this.setState({activity: true});
@@ -70,18 +65,18 @@ class CostCodes extends React.Component {
     }  
   }
   
-  delete(){
+  delete = () => {
     //Delete Stuff
   }
 
-  onEditorValueChange(props, value) {
+  onEditorValueChange = (props, value) => {
     let updatedSales = [...this.state.sales];
     updatedSales[props.rowIndex][props.field] = value;
     this.setState({sales: updatedSales})
   }
 
 
-  descEditor(props) {
+  descEditor = (props) => {
     return <InputText type="text" value={this.state.sales[props.rowIndex]['desc']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 

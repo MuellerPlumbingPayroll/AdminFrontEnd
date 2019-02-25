@@ -47,21 +47,13 @@ class Jobs extends React.Component {
         address: "",
         activity: false,
     };
-    this.isActive = this.isActive.bind(this);
-    this.changeActive = this.changeActive.bind(this);
-    this.clientEditor = this.clientEditor.bind(this);
-    this.addressEditor = this.addressEditor.bind(this);
-    this.onHideYes = this.onHideYes.bind(this);
-    this.onHide = this.onHide.bind(this);
-    this.onChanges = this.onChanges.bind(this);
-    this.delete = this.delete.bind(this);
   }
   
-  isActive(rowData){
+  isActive = (rowData) => {
     return rowData.isActive;
   }
 
-  changeActive(rowData, e){
+  changeActive = (rowData, e) =>{
     let upsales = [...this.state.sales];
     let ind = this.state.sales.indexOf(rowData);
     if(ind != -1){
@@ -74,12 +66,12 @@ class Jobs extends React.Component {
     }
   }
 
-  onEditorValueChange(props, value) {
+  onEditorValueChange = (props, value) =>{
     let updatedSales = [...this.state.sales];
     updatedSales[props.rowIndex][props.field] = value;
     this.setState({sales: updatedSales});
   }
-  onHideYes(){
+  onHideYes = () => {
       if(this.state.client != "" || this.state.address != ""){
         //Add here
         this.setState({activity: false});
@@ -87,24 +79,24 @@ class Jobs extends React.Component {
         //Warn here 
       }  
   } 
-  onHide(){
+  onHide = () => {
     this.setState({visible: false});
   }  
 
-  clientEditor(props) {
+  clientEditor = (props) => {
       return <InputText type="text" value={this.state.sales[props.rowIndex]['clientName']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 
-  addressEditor(props) {
+  addressEditor = (props) => {
     return <InputText type="text" value={this.state.sales[props.rowIndex]['address']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 
 
-  delete(){
+  delete = () => {
     //Delete
   }
 
-  onChanges(e){
+  onChanges = (e) => {
     if(e.checked){
       this.setState({activity: true});
     } else {

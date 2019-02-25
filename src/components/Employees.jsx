@@ -47,20 +47,13 @@ class Employees extends React.Component {
  
       ]
     };
-
-    this.onHide = this.onHide.bind(this);
-    this.onHideYes = this.onHideYes.bind(this);
-    this.delete = this.delete.bind(this);
-    this.nameEditor = this.nameEditor.bind(this);
-    this.emailEditor = this.emailEditor.bind(this);
-    this.onEditorValueChange = this.onEditorValueChange.bind(this);
   }
 
-  onHide(){
+  onHide= () =>{
       this.setState({visible: false});
   }
 
-  onHideYes(){
+  onHideYes= () =>{
     if(this.state.name != "" && this.state.email != ""){
       //Add here
       this.setState({activity: true});
@@ -69,21 +62,21 @@ class Employees extends React.Component {
       this.setState({activity: false});
     } 
   }
-  onEditorValueChange(props, value) {
+  onEditorValueChange = (props, value) => {
       let updatedSales = [...this.state.sales];
       updatedSales[props.rowIndex][props.field] = value;
       this.setState({sales: updatedSales});
   }
 
-  delete(){
+  delete= () =>{
       //Delete Stuff
   }
 
-  nameEditor(props) {
+  nameEditor = (props) => {
       return <InputText type="text" value={this.state.sales[props.rowIndex]['name']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 
-  emailEditor(props) {
+  emailEditor = (props) => {
     return <InputText type="text" value={this.state.sales[props.rowIndex]['email']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 

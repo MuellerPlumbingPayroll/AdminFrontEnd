@@ -15,15 +15,9 @@ class Welcome extends React.Component {
     this.state = {
       layoutMode: 'static',
     };
-    // event handlers
-    this.lastPayPeriodStart = this.lastPayPeriodStart.bind(this);
-    this.lastPayPeriodEnd = this.lastPayPeriodEnd.bind(this);
-    this.goForwardAYear = this.goForwardAYear.bind(this);
-    this.convertToString = this.convertToString.bind(this);
-    
   }
 
-  goForwardAYear(date, forward){
+  goForwardAYear = (date, forward) => {
     if(((date.getDate()+forward) > 31) && (date.getMonth()===12)){
       return new Date(date.getFullYear()+1, 0, forward-(31-date.getDate()));
     } 
@@ -36,7 +30,7 @@ class Welcome extends React.Component {
   }
 
 
-  lastPayPeriodStart(today = new Date()){
+  lastPayPeriodStart = (today = new Date()) =>{
     let sd = new Date();
     let day = today.getDay();
     if(day===0){
@@ -57,7 +51,7 @@ class Welcome extends React.Component {
     return sd;
   }
 
-  lastPayPeriodEnd(today = new Date()) {
+  lastPayPeriodEnd = (today = new Date()) => {
     let ed = new Date();
     let day = today.getDay();
     if(day===0){
@@ -78,7 +72,7 @@ class Welcome extends React.Component {
     return ed;
   }
 
-  convertToString(date){
+  convertToString = (date) =>{
       return (date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear());
   }
 
