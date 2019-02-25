@@ -92,7 +92,7 @@ class Welcome extends React.Component {
     return (
       <div className={wrapperClass}>
         <div className={mainPart} style={{justifyContent: 'center', alignItems: 'center', borderBottom: '5px'}}>
-            <div style={{paddingBottom: '20px', fontSize: '30px', textAlign: 'center'}}>Welcome, Hardcoded User!</div>
+            <div style={{paddingBottom: '20px', fontSize: '30px', textAlign: 'center'}}>Welcome, Tanner!</div>
             <div>
                 <h2 style={{textAlign: 'center'}}> Current Pay Period</h2>
                 <div style={{fontSize: '30px', textAlign: 'center'}}>
