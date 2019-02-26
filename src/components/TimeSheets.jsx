@@ -11,9 +11,6 @@ import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-light/theme.css';
 import '../stylesheets/vars.scss';
 
-
-import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
-
 // eslint-disable-next-line no-undef
 
 
@@ -128,7 +125,7 @@ class TimeSheets extends React.Component {
       <div className={wrapperClass}>
         <div className={mainPart}>
           <div>
-            <div>
+            <div className="container">
                 <div>
                   <div style={{textAlign: 'center', fontSize: '25px'}}>Download Time Sheets</div>
                   <h2>Select Employees</h2>
@@ -145,12 +142,12 @@ class TimeSheets extends React.Component {
                   <Button id="allEmps" label="All Employees" className="p-button-primary" width="20px" onClick={this.allClicked}/>
                 </div>
                 <h2>Select Date Range</h2>
-                  <div className="form-group" style={{marginLeft: '10px'}}>
-                    <div style={{paddingBottom: '5px', paddingTop: '5px', paddingLeft: '5px'}}>
+                  <div style={{marginLeft: '10px'}}>
+                    <div classNmae = "col-6"style={{paddingBottom: '5px', paddingTop: '5px', paddingLeft: '5px'}}>
                       From:
                       <Calendar minDate={miDate} maxDate={maDate} readOnlyInput value={this.state.startDate} onSelect={e => this.setState({ startDate: e.value })} showIcon />
                     </div>
-                    <div style={{ paddingBottom: '5px', paddingTop: '5px', paddingLeft: '5px' }}>
+                    <div classNmae = "col-6" style={{ paddingBottom: '5px', paddingTop: '5px', paddingLeft: '5px' }}>
                       To:
                       <Calendar minDate={this.restrictDate()} maxDate={maDate} readOnlyInput={true} value={this.state.endDate} onSelect={(f) => this.setState({endDate: f.value})} showIcon={true}></Calendar>
                     </div>
