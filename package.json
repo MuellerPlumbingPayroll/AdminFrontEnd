@@ -11,7 +11,17 @@
     "react-dom": "^16.7.0",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^2.1.5",
-    "react-transition-group": "^2.2.1"
+    "react-transition-group": "^2.2.1",
+    "babel-eslint": "^9.0.0",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.9.1",
+    "enzyme-to-json": "^3.3.5",
+    "eslint-config-airbnb": "^17.1.0",
+    "eslint-config-react-app": "^3.0.6",
+    "eslint-plugin-flowtype": "^2.50.3",
+    "eslint-plugin-import": "^2.14.0",
+    "eslint-plugin-jsx-a11y": "^6.1.2",
+    "eslint-plugin-react": "^7.12.3"
   },
   "jest": {
     "snapshotSerializers": ["enzyme-to-json/serializer"]
@@ -33,18 +43,6 @@
   ],
   "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
   "main": "index.js",
-  "devDependencies": {
-    "babel-eslint": "^9.0.0",
-    "enzyme": "^3.9.0",
-    "enzyme-adapter-react-16": "^1.9.1",
-    "enzyme-to-json": "^3.3.5",
-    "eslint-config-airbnb": "^17.1.0",
-    "eslint-config-react-app": "^3.0.6",
-    "eslint-plugin-flowtype": "^2.50.3",
-    "eslint-plugin-import": "^2.14.0",
-    "eslint-plugin-jsx-a11y": "^6.1.2",
-    "eslint-plugin-react": "^7.12.3"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/MuellerPlumbingPayroll/AdminFrontEnd.git"
