@@ -10,6 +10,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-light/theme.css';
 import '../stylesheets/vars.scss';
+import axios from 'axios';
 
 // eslint-disable-next-line no-undef
 
@@ -24,31 +25,22 @@ class CostCodes extends React.Component {
       code: "",
       desc: "",
       visible: false,
-      sales: [
-        {code: '1', desc: 'General Costs'},
-        {code: '22-100', desc: 'Demolition'},
-        {code: '22-110', desc: 'Groundwork'},
-        {code: '22-120', desc: 'Stackout'},
-        {code: '22-130', desc: 'Water Pipe'},
-        {code: '22-132', desc: 'Water Pipe, Meter Tree'},
-        {code: '22-134', desc: 'Water Pipe, Mains'},
-        {code: '22-140', desc: 'Gas Pipe'},
-        {code: '22-142', desc: 'Gas Pipe, Meter Bank'},
-        {code: '22-144', desc: 'Gas Pipe, Mains'},
-        {code: '22-150', desc: 'Fixtures'},
-        {code: '22-160', desc: 'Compressed Air Lines'},
-        {code: '22-170', desc: 'Bobcat Equipment'},
-        {code: '22-180', desc: 'Cast Iron'},
-        {code: '22-200', desc: 'Core Drill'},
-        {code: '22-210', desc: 'Floor Drains'},
-        {code: '22-220', desc: 'Garage Drains'},
-        {code: '22-230', desc: 'Medical Gas'},
-        {code: '22-240', desc: 'Other Plumbing'},
-        {code: '22-250', desc: 'Roof Drains'},
-        {code: '22-260', desc: 'Sand/Oil Interceptor'}
-      ],
+      codes: this.getCodes(),
       activity: false
     };
+  }
+
+  getCodes = async () =>{
+    try{
+      const newCodes = await axios('https://muller-plumbing-salary.appspot.com/cost-code/');
+      console.log(newCodes.data);
+      return newCodes.data;
+    } catch (e){
+      console.log("HIII IM HERE");
+      console.error(e);
+      console.log("HIII IM HERE");
+      return [];
+    }
   }
 
   onHide = () => {
@@ -56,7 +48,7 @@ class CostCodes extends React.Component {
   }
 
   onHideYes = () => {
-    if(this.state.code != "" && this.state.desc != ""){
+    if(this.state.code !== "" && this.state.desc !== ""){
       //Add here
       this.setState({activity: true});
     } else {
@@ -70,14 +62,18 @@ class CostCodes extends React.Component {
   }
 
   onEditorValueChange = (props, value) => {
-    let updatedSales = [...this.state.sales];
-    updatedSales[props.rowIndex][props.field] = value;
-    this.setState({sales: updatedSales})
+    let updatedcodes = [...this.state.codes];
+    updatedcodes[props.rowIndex][props.field] = value;
+    this.setState({codes: updatedcodes})
   }
 
 
   descEditor = (props) => {
-    return <InputText type="text" value={this.state.sales[props.rowIndex]['desc']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
+    return <InputText type="text" value={this.state.codes[props.rowIndex]['desc']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
+  }
+
+  groupEditor = (props) => {
+    return <InputText type="text" value={this.state.codes[props.rowIndex]['codeGroup']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 
 
@@ -115,9 +111,10 @@ class CostCodes extends React.Component {
                     <Button id="addB" label="Add Cost Code" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>
                   </div>
                   <div>
-                    <DataTable value={this.state.sales} scrollable={true}scrollHeight="300px"selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
+                    <DataTable value={this.state.codes} scrollable={true}scrollHeight="300px"selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
                             <Column field="code" header="Code" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} />
-                            <Column field="desc" header="Description" editor={this.descEditor}/>
+                            <Column field="description" header="Description" editor={this.descEditor}/>
+                            <Column field="codeGroup" header="Code Group" editor={this.groupEditor}/>
                             <Column selectionMode="multiple" field="del" header="Select " style={{textAlign:'center'}} />
                         </DataTable>
                   </div>  

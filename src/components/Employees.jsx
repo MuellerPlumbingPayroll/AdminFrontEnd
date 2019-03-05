@@ -54,7 +54,7 @@ class Employees extends React.Component {
   }
 
   onHideYes= () =>{
-    if(this.state.name != "" && this.state.email != ""){
+    if(this.state.name !== "" && this.state.email !== ""){
       //Add here
       this.setState({activity: true});
     } else {

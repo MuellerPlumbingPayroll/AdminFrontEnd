@@ -56,7 +56,7 @@ class Jobs extends React.Component {
   changeActive = (rowData, e) =>{
     let upsales = [...this.state.sales];
     let ind = this.state.sales.indexOf(rowData);
-    if(ind != -1){
+    if(ind !== -1){
       if(e.checked){
         upsales[ind].isActive = true;
       } else {
@@ -72,7 +72,7 @@ class Jobs extends React.Component {
     this.setState({sales: updatedSales});
   }
   onHideYes = () => {
-      if(this.state.client != "" || this.state.address != ""){
+      if(this.state.client !== "" || this.state.address !== ""){
         //Add here
         this.setState({activity: false});
       } else {
