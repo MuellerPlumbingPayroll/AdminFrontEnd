@@ -6,10 +6,12 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
+import { Checkbox } from 'primereact/checkbox'
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-light/theme.css';
 import '../stylesheets/vars.scss';
+import axios from 'axios';
 
 // eslint-disable-next-line no-undef
 
@@ -21,67 +23,128 @@ class Employees extends React.Component {
       layoutMode: 'static',
       mobileMenuActive: false,
       selected:[],
-      mode: 'table',
       visible: false,
-      name: "",
       email: "",
       activity: false,
-      sales: [
-        {name: 'Jane Doe', email: 'jdoemuller@gmail.com'},
-        {name: 'Jim Deer', email: 'jdeermuller@gmail.com'},
-        {name: 'John Adams', email: 'jadamsmuller@gmail.com'},
-        {name: 'Ryan Baker', email: 'rbakermuller@gmail.com'},
-        {name: 'Will Patel', email: 'wpatelmuller@gmail.com'},
-        {name: 'Garrett Quinn', email: 'gquinnmuller@gmail.com'},
-        {name: 'Todd White', email: 'twhitemuller@gmail.com'},
-        {name: 'Colin Clark', email: 'cclarckmuller@gmail.com'},
-        {name: 'Greg Evans', email: 'gevansmuller@gmail.com'},
-        {name: 'Phillip Frank', email: 'pfrankmuller@gmail.com'},
-        {name: 'Connor Jones', email: 'cjonesmuller@gmail.com'},
-        {name: 'Jack Mason', email: 'jmasonmuller@gmail.com'},
-        {name: 'Ian Klein', email: 'ikleinmuller@gmail.com'},
-        {name: 'Martin Smith', email: 'msmithmuller@gmail.com'},
-        {name: 'Rob Davis', email: 'rdavismuller@gmail.com'},
-        {name: 'Josh Anderson', email: 'jandersonmuller@gmail.com'},
-        {name: 'Aaron Lopez', email: 'alopezmuller@gmail.com'},
- 
-      ]
+      users: null,
+      updatedRows: [],
+      showWarning: false,
+      emptyFields: false,
+      goActive: false,
+      goInactive: false,
+      checkedRow: null,
+      event: null,
     };
   }
 
-  onHide= () =>{
-      this.setState({visible: false});
+    
+  isActive = (rowData) => {
+    return rowData.isActive;
   }
 
-  onHideYes= () =>{
-    if(this.state.name !== "" && this.state.email !== ""){
-      //Add here
-      this.setState({activity: true});
+  componentDidMount = async () =>{
+    try{
+      const newUsers = await axios('https://api-dot-muller-plumbing-salary.appspot.com/users');
+      this.setState({users: newUsers.data});
+    } catch (e){
+      console.error(e);
+      this.setState({users: []});
+    }
+  }
+
+  changeActive = (rowData, e) =>{
+    this.setState({checkedRow: rowData, event: e});
+    if(e.checked){
+      this.setState({goInactive: true});
     } else {
-      //Warn here 
-      this.setState({activity: false});
-    } 
-  }
-  onEditorValueChange = (props, value) => {
-      let updatedSales = [...this.state.sales];
-      updatedSales[props.rowIndex][props.field] = value;
-      this.setState({sales: updatedSales});
+      this.setState({goActive: true});
+    }
   }
 
-  delete= () =>{
-      //Delete Stuff
+  actionActive = () => {
+      let upusers = [...this.state.users];
+      let ind = this.state.users.indexOf(this.state.checkedRow);
+      if(ind !== -1){
+        if(this.state.event.checked){
+          upusers[ind].isActive = true;
+          delete upusers[ind]['dateToRemove'];
+        } else {
+          upusers[ind].isActive = false;
+          const date = new Date();
+          upusers[ind]['dateToRemove'] = new Date(date.getFullYear()+2, 0, 1);
+        }
+        this.setState({users: upusers});
+        let newUpRows = [...this.state.updatedRows];
+        newUpRows.push(this.state.checkedRow);
+        this.setState({updatedRows: newUpRows});
+      }
+    this.onHideActive();
   }
 
-  nameEditor = (props) => {
-      return <InputText type="text" value={this.state.sales[props.rowIndex]['name']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
+  onHide= () =>{
+    this.setState({visible: false});
+    this.setState({email: ""});
+  }
+  
+  onHideActive = () => {
+    this.setState({goActive: false, goInactive: false});
   }
 
-  emailEditor = (props) => {
-    return <InputText type="text" value={this.state.sales[props.rowIndex]['email']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
+  onHideWarning = () => {
+    this.setState({showWarning: false});
   }
+
+  onHideYes = async () => {
+    if(this.state.email !== ""){
+      //Add here
+      try{
+        let url = 'https://api-dot-muller-plumbing-salary.appspot.com/users';
+        let data = {email: this.state.email, isActive: true};
+        await axios.post(url, data);
+      } catch (e){
+        console.error(e);
+      }
+      try{
+        const newUsers = await axios('https://api-dot-muller-plumbing-salary.appspot.com/users');
+        this.setState({users: newUsers.data});
+      } catch (e){
+        console.error(e);
+        this.setState({users: []});
+      }
+      this.setState({email: ""});
+      this.setState({visible: false})
+    } else {
+      this.setState({emptyFields: true});
+    }  
+  }
+
+  saveChanges = async () => {
+    if(this.state.updatedRows !== []){
+      for(let i = 0; i < this.state.updatedRows.length; i++){
+        try{
+          let url = `https://api-dot-muller-plumbing-salary.appspot.com/users/${this.state.updatedRows[i].id}`;
+          let temp = this.state.updatedRows[i];
+          delete temp['id'];
+          await axios.post(url, temp);
+        } catch (e){
+          console.error(e);
+        }
+      }
+      try{
+        const newUsers = await axios('https://api-dot-muller-plumbing-salary.appspot.com/users');
+        this.setState({users: newUsers.data});
+      } catch (e){
+        console.error(e);
+        this.setState({users: []});
+      }
+      this.setState({updatedRows: []});
+    }
+  }
+
 
   render() {
-  
+    const dateRem = new Date();
+    const ourDate = new Date(dateRem.getFullYear()+2, 0, 1);
     const wrapperClass = classNames('layout-wrapper', {
       'layout-static': this.state.layoutMode === 'static',
       'layout-mobile-sidebar-active': this.state.mobileMenuActive,
@@ -92,6 +155,12 @@ class Employees extends React.Component {
             <Button label="No" icon="pi pi-times" onClick={this.onHide} />
         </div>
     );
+    const footerVerification = (
+      <div>
+          <Button label="Yes" icon="pi pi-check" onClick={this.actionActive} />
+          <Button label="No" icon="pi pi-times" onClick={this.onHideActive} />
+      </div>
+    );
     const mainPart = classNames('layout-main');
     return (
       <div className={wrapperClass}>
@@ -99,34 +168,39 @@ class Employees extends React.Component {
             <div>
                 <div style={{textAlign: 'center', fontSize: '30px'}}>Manage Employees</div>
                 <div>
+                    <Dialog header="Make user active" visible={this.state.goInactive} style={{width: '50vw'}} modal={true} onHide={(e) => this.setState({goInactive: false})} footer={footerVerification}>
+                      Activating this user will mean it will not expire. Confirm.
+                    </Dialog>
+                    <Dialog header="Make user inactive" visible={this.state.goActive} style={{width: '50vw'}} modal={true} onHide={(e) => this.setState({goActive: false})} footer={footerVerification}>
+                      Deactivating this user means that all the data on this user will be removed on {ourDate.toDateString()}. Confirm.
+                    </Dialog>
+                    <Dialog header="Empty Fields" visible={this.state.emptyFields} style={{width: '50vw'}} modal={true} onHide={(e) => this.setState({emptyFields: false})}>
+                      Please enter all values when adding an Employee
+                    </Dialog>
                     <Dialog header="Add Employee" footer={footer} visible={this.state.visible} style={{width: '50vw'}} modal={true} onHide={this.onHide}>
-                        <span style={{paddingTop:'25px', display: 'block'}}>
-                            <label style={{padding: '10px'}}>Name</label>
-                            <InputText id="in" value={this.state.name} onChange={(e) => this.setState({name: e.target.value})} />
-                        </span> 
                         <span style={{paddingTop:'25px', display: 'block'}}>
                             <label style={{padding: '10px'}}>Email</label>
                             <InputText id="in" value={this.state.email} onChange={(e) => this.setState({email: e.target.value})} />
                         </span>  
                     </Dialog>
+                    <Dialog header="You have unsaved Changes" footer={footer} visible={this.state.showWarning} style={{width: '50vw'}} modal={true} onHide={this.onHideWarning}>
+                      <span style={{paddingTop:'25px', display: 'block'}}>
+                          <label style={{padding: '10px'}}>The changes you made have not been saved</label>
+                      </span>  
+                    </Dialog>
                   <div style={{paddingBottom: '5px'}}>
                     <Button id="addB" label="Add Employee" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>
                   </div>
                   <div>
-                    <DataTable value={this.state.sales} scrollable={true}scrollHeight="300px"selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
-                            <Column field="name" header="Name" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} editor={this.nameEditor}/>
-                            <Column field="email" header="Email" editor={this.emailEditor}/>
-                            <Column selectionMode="multiple" field="del" header="Delete " style={{textAlign:'center'}} />
+                    <DataTable value={this.state.users} scrollable={true}scrollHeight="300px">
+                            <Column field="email" header="Email" filter={true} filterMatchMode={"contains"} filterType={"inputtext"}/>
+                            <Column field="isActive" header="Active " style={{textAlign:'center'}} body={ (rowData, column) => (
+                              <Checkbox onChange={(e) => {this.changeActive(rowData, e)}} checked={this.isActive(rowData)} />) }/>
                     </DataTable>
                   </div>  
-                </div>
-                <div>
-                  <div style={{paddingBottom: '5px', paddingTop: '5px'}}>
-                    <Button id="deleteB" label="Delete Selected" className="p-button-primary" onClick={this.delete}/>
+                  <div className="saveChanges" style={{paddingBottom: '5px'}}>
+                    <Button id="saveB" label="Save Changes" className="p-button-success" style={{padding: '5px'}} onClick={this.saveChanges}/>
                   </div>
-                  <div style={{paddingBottom: '5px'}}>
-                    <Button id="saveB" label="Save Changes" className="p-button-success" style={{padding: '5px'}}/>
-                </div>
                 </div>
             </div>
         </div>
