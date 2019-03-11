@@ -11,6 +11,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-light/theme.css';
 import '../stylesheets/vars.scss';
+import axios from 'axios';
 
 // eslint-disable-next-line no-undef
 
@@ -21,32 +22,26 @@ class Jobs extends React.Component {
       layoutMode: 'static',
       //layoutColorMode: 'dark',
       mobileMenuActive: false,
-      sales: [
-          {clientName: 'Acme Corporation', address: '2244 Woodland Dr Sioux City, IA 51101', isActive: true},
-          {clientName: 'Globex Corporation', address: '4252 Jenna Ln Urbandale, IA 50322', isActive: true},
-          {clientName: 'Soylent Corp', address: '3878 Summit St Des Moines, IA 50309', isActive: true},
-          {clientName: 'Initech', address: '3184 Pyramid Rd Iowa City, IA 52240', isActive: true},
-          {clientName: 'Umbrella Corporation', address: '3626 Rebecca St Elk Grove Village, IL 60007', isActive: true},
-          {clientName: 'Hooli', address: '6 Johnny Ln Milwaukee, WI 53202', isActive: true},
-          {clientName: 'Vehement Capital Partners', address: '3668 Lind St New Berlin, WI 53151', isActive: false},
-          {clientName: 'Massive Dynamic', address: '4415 Rose St Arlington Heights, IL 60005', isActive: false},
-          {clientName: 'Acrodance', address: '1436 Hazelwood Ave Gilmore City, IA 50541', isActive: false},
-          {clientName: 'Snorus', address: '3881 Hickman St Oak Brook, IL 60523', isActive: false},
-          {clientName: 'Soda Fonze', address: '1314 Oak Ave Chicago, IL 60607', isActive: false},
-          {clientName: 'Xth', address: '613 Woodland Dr Early, IA 50535', isActive: false},
-          {clientName: 'The Flowering Body', address: '1658 Pin Oak Dr Clinton, IA 52732', isActive: false},
-          {clientName: 'Overplex', address: '2970 Southern Ave Charles City, IA 50616', isActive: false},
-          {clientName: 'Mounty of Steel', address: '1227 Progress Way Morning Sun, IA 52640', isActive: false},
-          {clientName: 'Gadtron', address: '3709 Dovetail Dr Schaumburg, IL 60173', isActive: false},
-          {clientName: 'Futuris', address: '4410 Morningview Ln Swaledale, IA 50477', isActive: false},
-          {clientName: 'Fine Kettles', address: '3960 Jones Dr Maquon, IL 61458', isActive: false},
-          {clientName: 'ExoGallery', address: '1740 Bailey Dr Cedar Rapids, IA 52402', isActive: false},
-        ],
-        visible: false,
-        client: "",
-        address: "",
-        activity: false,
+      jobs: null,
+      visible: false,
+      client: "",
+      address: "",
+      activity: false,
+      selected: [],
+      updatedRows: [],
+      showWarning: false,
+      emptyFields: false
     };
+  }
+
+  componentDidMount = async () =>{
+    try{
+      const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
+      this.setState({jobs: newJobs.data});
+    } catch (e){
+      console.error(e);
+      this.setState({jobs: []});
+    }
   }
   
   isActive = (rowData) => {
@@ -54,46 +49,108 @@ class Jobs extends React.Component {
   }
 
   changeActive = (rowData, e) =>{
-    let upsales = [...this.state.sales];
-    let ind = this.state.sales.indexOf(rowData);
-    if(ind != -1){
+    let upjobs = [...this.state.jobs];
+    let ind = this.state.jobs.indexOf(rowData);
+    if(ind !== -1){
       if(e.checked){
-        upsales[ind].isActive = true;
+        upjobs[ind].isActive = true;
       } else {
-        upsales[ind].isActive = false;
+        upjobs[ind].isActive = false;
       }
-      this.setState({sales: upsales});
+      this.setState({jobs: upjobs});
+      let newUpRows = [...this.state.updatedRows];
+      newUpRows.push(rowData);
+      this.setState({updatedRows: newUpRows});
     }
   }
 
   onEditorValueChange = (props, value) =>{
-    let updatedSales = [...this.state.sales];
-    updatedSales[props.rowIndex][props.field] = value;
-    this.setState({sales: updatedSales});
+    let updatedjobs = [...this.state.jobs];
+    updatedjobs[props.rowIndex][props.field] = value;
+    let notAdded = true;
+    for(let i = 0; i < this.state.updatedRows.length; i++){
+      if(this.state.updatedRows[i]['id'] === updatedjobs[props.rowIndex]['id']){
+        notAdded = false;
+      }
+    }
+    if(notAdded){
+      let newUpRows = [...this.state.updatedRows];
+      newUpRows.push(updatedjobs[props.rowIndex]);
+      this.setState({updatedRows: newUpRows});
+    }
+    this.setState({jobs: updatedjobs});
   }
-  onHideYes = () => {
-      if(this.state.client != "" || this.state.address != ""){
-        //Add here
-        this.setState({activity: false});
-      } else {
-        //Warn here 
-      }  
-  } 
+
+  onHideYes = async () => {
+    if(this.state.client !== "" && this.state.address !== "" && this.state.activity !== null){
+      //Add here
+      try{
+        let url = 'https://api-dot-muller-plumbing-salary.appspot.com/jobs';
+        let toAdd = []
+        toAdd.push( {id: null, clientName: this.state.client, address: this.state.address, isActive: this.state.activity});
+        await axios.post(url, toAdd);
+      } catch (e){
+        console.error(e);
+      }
+      try{
+        const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
+        this.setState({jobs: newJobs.data});
+      } catch (e){
+        console.error(e);
+        this.setState({jobs: []});
+      }
+      this.setState({client: ""});
+      this.setState({address: ""});
+      this.setState({activity: false});
+      this.setState({visible: false});
+    } else {
+      this.setState({emptyFields: true});
+    }  
+  }
+
   onHide = () => {
     this.setState({visible: false});
+    this.setState({client: ""});
+    this.setState({address: ""});
+    this.setState({activity: false});
   }  
+  onHideWarning = () => {
+    this.setState({showWarning: false});
+  }
 
   clientEditor = (props) => {
-      return <InputText type="text" value={this.state.sales[props.rowIndex]['clientName']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
+      return <InputText type="text" value={this.state.jobs[props.rowIndex]['clientName']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 
   addressEditor = (props) => {
-    return <InputText type="text" value={this.state.sales[props.rowIndex]['address']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
+    return <InputText type="text" value={this.state.jobs[props.rowIndex]['address']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 
 
-  delete = () => {
-    //Delete
+  delete = async() => {
+    if(this.state.selected.length > 0){
+      for(let i = 0; i < this.state.selected.length; i++){
+        let tempId = this.state.selected[i]['id'];
+        let url = `https://api-dot-muller-plumbing-salary.appspot.com/jobs/${tempId}`;
+        try{
+          await axios.delete(url);
+          const newArray = this.state.updatedRows.filter(function(val, ind, arr){
+            return val['id'] !== tempId;
+          });
+          this.setState({updatedRows: newArray});
+        } catch (e){
+          console.error(e);
+        }
+      }
+      try{
+        const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
+        this.setState({jobs: newJobs.data});
+      } catch (e){
+        console.error(e);
+        this.setState({jobs: []});
+      }
+      this.setState({selected: []});
+    }
   }
 
   onChanges = (e) => {
@@ -101,6 +158,25 @@ class Jobs extends React.Component {
       this.setState({activity: true});
     } else {
       this.setState({activity: false});
+    }
+  }
+
+  saveChanges = async () => {
+    if(this.state.updatedRows !== []){
+      try{
+        let url = 'https://api-dot-muller-plumbing-salary.appspot.com/jobs';
+        await axios.post(url, this.state.updatedRows);
+      } catch (e){
+        console.error(e);
+      }
+      try{
+        const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
+        this.setState({jobs: newJobs.data});
+      } catch (e){
+        console.error(e);
+        this.setState({jobs: []});
+      }
+      this.setState({updatedRows: []});
     }
   }
 
@@ -134,18 +210,26 @@ class Jobs extends React.Component {
                         <InputText id="in" value={this.state.address} onChange={(e) => this.setState({address: e.target.value})} />
                     </span>
                     <span style={{paddingTop:'25px', display: 'block'}}>
-                        <label style={{padding: '10px'}}>Client</label>
+                        <label style={{padding: '10px'}}>Active</label>
                         <Checkbox id="in" checked={this.state.activity} onChange={this.onChanges} />
+                    </span>  
+                  </Dialog>
+                  <Dialog header="You have unsaved Changes" footer={footer} visible={this.state.showWarning} style={{width: '50vw'}} modal={true} onHide={this.onHideWarning}>
+                    <span style={{paddingTop:'25px', display: 'block'}}>
+                        <label style={{padding: '10px'}}>The changes you made have not been saved</label>
                     </span>  
                   </Dialog>
                   <div style={{paddingBottom: '5px'}}>
                     <Button id="addB" label="Add Job" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>
+                    <Dialog header="Empty Fields" visible={this.state.emptyFields} style={{width: '50vw'}} modal={true} onHide={(e) => this.setState({emptyFields: false})}>
+                      Please enter all values when adding a Job
+                    </Dialog>
                   </div>
                 <div>
-                  <DataTable value={this.state.sales} scrollable={true}scrollHeight="300px" selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
+                  <DataTable value={this.state.jobs} scrollable={true}scrollHeight="300px" selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
                           <Column field="clientName" header="Client" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} editor={this.clientEditor}/>
                           <Column field="address" header="Address" editor={this.addressEditor}/>
-                          <Column field="active" header="Active " style={{textAlign:'center'}} body={ (rowData, column) => (
+                          <Column field="isActive" header="Active " style={{textAlign:'center'}} body={ (rowData, column) => (
                               <Checkbox onChange={(e) => {this.changeActive(rowData, e)}} checked={this.isActive(rowData)} />) }/>
                           <Column selectionMode="multiple" field="del" header="Delete " style={{textAlign:'center'}} />
                       </DataTable>
@@ -156,7 +240,7 @@ class Jobs extends React.Component {
                   <Button id="deleteB" label="Delete Selected" className="p-button-primary" onClick={this.delete}/>
                 </div>
                 <div className="saveChanges" style={{paddingBottom: '5px'}}>
-                  <Button id="saveB" label="Save Changes" className="p-button-success" style={{padding: '5px'}}/>
+                  <Button id="saveB" label="Save Changes" className="p-button-success" style={{padding: '5px'}} onClick={this.saveChanges}/>
                 </div>
               </div>
             </div>

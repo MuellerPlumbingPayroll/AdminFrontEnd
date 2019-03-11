@@ -6,10 +6,12 @@ import { Calendar } from 'primereact/calendar';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
+import { Checkbox } from 'primereact/checkbox';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-light/theme.css';
 import '../stylesheets/vars.scss';
+import axios from 'axios';
 
 // eslint-disable-next-line no-undef
 
@@ -25,32 +27,23 @@ class TimeSheets extends React.Component {
       endDate: null,
       errorEmps: false,
       errorDate: false,
-      sales: [
-        {name: 'Jane Doe', email: 'jdoemuller@gmail.com'},
-        {name: 'Jim Deer', email: 'jdeermuller@gmail.com'},
-        {name: 'John Adams', email: 'jadamsmuller@gmail.com'},
-        {name: 'Ryan Baker', email: 'rbakermuller@gmail.com'},
-        {name: 'Will Patel', email: 'wpatelmuller@gmail.com'},
-        {name: 'Garrett Quinn', email: 'gquinnmuller@gmail.com'},
-        {name: 'Todd White', email: 'twhitemuller@gmail.com'},
-        {name: 'Colin Clark', email: 'cclarckmuller@gmail.com'},
-        {name: 'Greg Evans', email: 'gevansmuller@gmail.com'},
-        {name: 'Phillip Frank', email: 'pfrankmuller@gmail.com'},
-        {name: 'Connor Jones', email: 'cjonesmuller@gmail.com'},
-        {name: 'Jack Mason', email: 'jmasonmuller@gmail.com'},
-        {name: 'Ian Klein', email: 'ikleinmuller@gmail.com'},
-        {name: 'Martin Smith', email: 'msmithmuller@gmail.com'},
-        {name: 'Rob Davis', email: 'rdavismuller@gmail.com'},
-        {name: 'Josh Anderson', email: 'jandersonmuller@gmail.com'},
-        {name: 'Aaron Lopez', email: 'alopezmuller@gmail.com'},
- 
-      ],
+      users: null,
     };
+  }
+
+  componentDidMount = async () =>{
+    try{
+      const newUsers = await axios('https://api-dot-muller-plumbing-salary.appspot.com/users');
+      this.setState({users: newUsers.data});
+    } catch (e){
+      console.error(e);
+      this.setState({users: []});
+    }
   }
   
   allClicked = () => {
-    if(this.state.selected.length === 0){
-      this.setState({selected: this.state.sales});
+    if(this.state.selected.length !== this.state.users.length){
+      this.setState({selected: this.state.users});
     } else {
       this.setState({ selected: [] });
     }
@@ -61,6 +54,10 @@ class TimeSheets extends React.Component {
       return this.state.startDate;
     }
     return new Date((new Date()).getFullYear() - 1, 0, 1);
+  }
+
+  isActive = (rowData) => {
+    return rowData.isActive;
   }
 
   goBackAYear = (date, past) => {
@@ -125,15 +122,16 @@ class TimeSheets extends React.Component {
       <div className={wrapperClass}>
         <div className={mainPart}>
           <div>
-            <div>
+            <div className="container">
                 <div>
                   <div style={{textAlign: 'center', fontSize: '25px'}}>Download Time Sheets</div>
                   <h2>Select Employees</h2>
                   <div>
-                    <DataTable value={this.state.sales} scrollable={true}scrollHeight="150px"selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
-                        <Column field="name" header="Name" filter={true} filterMatchMode={"contains"} filterType={"inputtext"}/>
-                        <Column field="email" header="Email" />
-                        <Column selectionMode="multiple" field="del" header="Select " style={{textAlign:'center'}} />
+                    <DataTable value={this.state.users} scrollable={true}scrollHeight="150px"selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
+                        <Column field="email" header="Email" filter={true} filterMatchMode={"contains"} filterType={"inputtext"}/>
+                        <Column field="isActive" header="Active " style={{textAlign:'center'}} body={ (rowData, column) => (
+                            <Checkbox checked={this.isActive(rowData)} />) }/>
+                        <Column selectionMode="multiple" field="select" header="Select " style={{textAlign:'center'}} />
                     </DataTable>
                   </div>  
                 </div>
@@ -143,11 +141,11 @@ class TimeSheets extends React.Component {
                 </div>
                 <h2>Select Date Range</h2>
                   <div style={{marginLeft: '10px'}}>
-                    <div style={{paddingBottom: '5px', paddingTop: '5px', paddingLeft: '5px'}}>
+                    <div className = "col-6"style={{paddingBottom: '5px', paddingTop: '5px', paddingLeft: '5px'}}>
                       From:
                       <Calendar minDate={miDate} maxDate={maDate} readOnlyInput value={this.state.startDate} onSelect={e => this.setState({ startDate: e.value })} showIcon />
                     </div>
-                    <div style={{ paddingBottom: '5px', paddingTop: '5px', paddingLeft: '5px' }}>
+                    <div className = "col-6" style={{ paddingBottom: '5px', paddingTop: '5px', paddingLeft: '5px' }}>
                       To:
                       <Calendar minDate={this.restrictDate()} maxDate={maDate} readOnlyInput={true} value={this.state.endDate} onSelect={(f) => this.setState({endDate: f.value})} showIcon={true}></Calendar>
                     </div>
