@@ -48,12 +48,6 @@ class Jobs extends React.Component {
     return rowData.isActive;
   }
 
-  componentWillUnmount = () => {
-    if (this.state.updatedRows !== []){
-      this.setState({showWarning: true});
-    }
-  }
-
   changeActive = (rowData, e) =>{
     let upjobs = [...this.state.jobs];
     let ind = this.state.jobs.indexOf(rowData);

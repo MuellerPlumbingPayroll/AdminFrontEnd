@@ -9,6 +9,9 @@ import Welcome from '../components/Welcome';
 import TimeSheets from '../components/TimeSheets';
 import InputText from 'primereact/inputtext';
 import { mount, shallow } from 'enzyme';
+//import axios from 'axios';
+
+//jest.mock('axios');
 
 
 describe('Employees', ()=> {
@@ -21,48 +24,62 @@ describe('Employees', ()=> {
     const comp = mount(<Employees />);
 
     comp.find('#addB').at(1).simulate('click');
-    comp.find('#deleteB').at(1).simulate('click');
     comp.find('#saveB').at(1).simulate('click');
 
     expect(comp).toMatchSnapshot();
     comp.unmount();
   });
-  it('should call onHideYes', () => {
-    const comp = shallow(<Employees />);
-    const inst = comp.instance();
-    comp.setState({activity: true, name: "", email: ""});
-    inst.onHideYes();
-    expect(comp.state('activity')).toEqual(false);
-    comp.setState({name: "Test", email: "Test"});
-    inst.onHideYes();
-    expect(comp.state('activity')).toEqual(true);
+  */
+  let comp;
+  beforeEach(() => {
+    comp = shallow(<Employees />);
+    comp.setState({users: [{email: "test000@gmail.com", isActive: true},{email: "test001@gmail.com", isActive: true},{email: "test002@gmail.com", isActive: false, dateToRemove: {
+      "_seconds": 1609480800,
+      "_nanoseconds": 0
+    }}]});
   });
+  it('should call changeActive', ()=> {
+    const inst = comp.instance();
+    inst.changeActive([{email: "test", isActive: false}], {checked: true});
+    expect(comp.state('goInactive')).toEqual(true);
+    inst.changeActive([{email: "test", isActive: true}], {checked: false});
+    expect(comp.state('goActive')).toEqual(true);
+  });
+  it('should call action Active', () =>{
+    const inst = comp.instance();
+    comp.setState({checkedRow: comp.state('users')[0], event: {checked: false}});
+    inst.actionActive();
+    expect(comp.state('users')).not.toEqual(null);
+
+    comp.setState({checkedRow: comp.state('users')[2], event: {checked: true}});
+    inst.actionActive();
+    expect(comp.state('users')).not.toEqual(null);
+  })
   it('should call onHide', () => {
-    const comp = shallow(<Employees />);
     const inst = comp.instance();
     comp.setState({visible: true});
     inst.onHide();
     expect(comp.state('visible')).toEqual(false);
   });
-  it('should call onEditorValueChange', () => {
-    const comp = shallow(<Employees />);
+  it('should call onHideActive', () => {
     const inst = comp.instance();
-    inst.onEditorValueChange({rowIndex: 0,field: 'name'}, 'Test');
-    expect(comp.state('sales')[0].name).toEqual("Test");
+    comp.setState({goActive: true, goInactive: true});
+    inst.onHideActive();
+    expect(comp.state('goActive')).toEqual(false);
+    expect(comp.state('goInactive')).toEqual(false);
   });
-  it('should call nameEditor', () => {
-    const comp = shallow(<Employees />);
+  it('should call onHide', () => {
     const inst = comp.instance();
-    const props = {rowIndex: 0};
-    expect(inst.nameEditor(props)).toBeDefined();
+    comp.setState({visible: true});
+    inst.onHide();
+    expect(comp.state('visible')).toEqual(false);
   });
-  it('should call emailEditor', () => {
-    const comp = shallow(<Employees />);
+  it('should call onHideWarning', () => {
     const inst = comp.instance();
-    const props = {rowIndex: 0};
-    expect(inst.emailEditor(props)).toBeDefined();
+    comp.setState({showWarning: true});
+    inst.onHideWarning();
+    expect(comp.state('showWarning')).toEqual(false);
   });
-  */
 });
 
 describe('CostCodes', ()=> {
@@ -81,6 +98,24 @@ describe('CostCodes', ()=> {
     expect(comp).toMatchSnapshot();
     comp.unmount();
   });
+  */
+  let comp;
+  beforeEach(() => {
+    comp = shallow(<CostCodes />);
+    comp.setState({codes: [
+      {
+        id: "11-222",
+        codeGroup: "SERVICE",
+        description: "Test12",
+        code: "11-222"
+      },
+      {
+        id: "22-000",
+        codeGroup: "PLUMBING",
+        description: "Testing",
+        code: "22-000"
+      }]});
+ });
   /*
   it('should call onHideYes', () => {
     const comp = shallow(<CostCodes />);
@@ -92,26 +127,29 @@ describe('CostCodes', ()=> {
     inst.onHideYes();
     expect(comp.state('activity')).toEqual(true);
   });
+  */
   it('should call onHide', () => {
-    const comp = shallow(<CostCodes />);
     const inst = comp.instance();
     comp.setState({visible: true});
     inst.onHide();
     expect(comp.state('visible')).toEqual(false);
   });
+  it('should call onHideWarning', () => {
+    const inst = comp.instance();
+    comp.setState({showWarning: true});
+    inst.onHideWarning();
+    expect(comp.state('showWarning')).toEqual(false);
+  });
   it('should call onEditorValueChange', () => {
-    const comp = shallow(<CostCodes />);
     const inst = comp.instance();
     inst.onEditorValueChange({rowIndex: 0,field: 'code'}, 'Test');
-    expect(comp.state('sales')[0].code).toEqual("Test");
+    expect(comp.state('codes')[0].code).toEqual("Test");
   });
   it('should call descEditor', () => {
-    const comp = shallow(<CostCodes />);
     const inst = comp.instance();
     const props = {rowIndex: 0};
     expect(inst.descEditor(props)).toBeDefined();
   });
-  */
 });
 
 describe('Jobs', ()=> {
@@ -130,36 +168,46 @@ describe('Jobs', ()=> {
     expect(comp).toMatchSnapshot();
     comp.unmount();
   });
-  /*
-  it('should call changeActive', () => {
-    const comp = shallow(<Jobs />);
-    const inst = comp.instance();
-    inst.changeActive(comp.state('sales')[0], {checked: true});
-    const array = comp.state('sales');
-    expect(array[1].isActive).toEqual(false);
+  */
+  let comp;
+ beforeEach(() => {
+  comp = shallow(<Jobs />);
+  comp.setState({jobs: [
+    {
+      "id": "4UiP83DKFy7tywNDY54B",
+      "address": "1 Galaxy Far Far Away",
+      "isActive": false,
+      "clientName": "The Deathstar"
+    },
+    {
+      "id": "AkjvCvjnsWASwGbBzg5o",
+      "address": "7396 Ramblewood Street Montgomery, AL 12345",
+      "isActive": true,
+      "clientName": "Hooker Furniture"
+    }]});
+});
+it('should call action Active', () =>{
+  const inst = comp.instance();
+  inst.changeActive(comp.state('jobs')[0], {checked: true});
+  expect(comp.state('jobs')).not.toEqual(null);
 
-    inst.changeActive(comp.state('sales')[1], {checked: false});
-    const array2 = comp.state('sales');
-    expect(array2[1].isActive).toEqual(false);
-  });
-  it('should call onHideYes', () => {
-    const comp = shallow(<Jobs />);
-    const inst = comp.instance();
-    inst.onHideYes();
-    expect(comp.state('activity')).toEqual(false);
-    comp.setState({client: "Test", address: "Test", activity: true});
-    inst.onHideYes();
-    expect(comp.state('activity')).toEqual(false);
-  });
+  inst.changeActive(comp.state('jobs')[1], {checked: false});
+  expect(comp.state('jobs')).not.toEqual(null);
+
+});
+it('should call onHideWarning', () => {
+  const inst = comp.instance();
+  comp.setState({showWarning: true});
+  inst.onHideWarning();
+  expect(comp.state('showWarning')).toEqual(false);
+});
   it('should call onHide', () => {
-    const comp = shallow(<Jobs />);
     const inst = comp.instance();
     comp.setState({visible: true});
     inst.onHide();
     expect(comp.state('visible')).toEqual(false);
   });
   it('should call onChanges', () => {
-    const comp = shallow(<Jobs />);
     const inst = comp.instance();
     comp.setState({activity: false});
     inst.onChanges({checked: true});
@@ -170,25 +218,21 @@ describe('Jobs', ()=> {
     expect(comp.state('activity')).toEqual(false);
   });
   it('should call onEditorValueChange', () => {
-    const comp = shallow(<Jobs />);
     const inst = comp.instance();
-    inst.onEditorValueChange({rowIndex: 0,field: 'clientName'}, 'Test');
-    expect(comp.state('sales')[0].clientName).toEqual("Test");
+    inst.onEditorValueChange({rowIndex: 0,field: 'clientName'}, 'Test123');
+    expect(comp.state('jobs')[0].clientName).toEqual("Test123");
   });
-  */
+  
   it('should call clientEditor', () => {
-    const comp = shallow(<Jobs />);
     const inst = comp.instance();
     const props = {rowIndex: 0};
     expect(inst.clientEditor(props)).toBeDefined();
   });
   it('should call addressEditor', () => {
-    const comp = shallow(<Jobs />);
     const inst = comp.instance();
     const props = {rowIndex: 0};
     expect(inst.addressEditor(props)).toBeDefined();
   });
-
 
 });
 
