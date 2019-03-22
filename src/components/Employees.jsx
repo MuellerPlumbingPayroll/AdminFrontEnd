@@ -99,7 +99,7 @@ class Employees extends React.Component {
       //Add here
       try{
         let url = 'https://api-dot-muller-plumbing-salary.appspot.com/users';
-        let data = {email: this.state.email, isActive: true};
+        let data = {email: `${this.state.email}@gmail.com`, isActive: true};
         await axios.post(url, data);
       } catch (e){
         console.error(e);
@@ -181,6 +181,7 @@ class Employees extends React.Component {
                         <span style={{paddingTop:'25px', display: 'block'}}>
                             <label style={{padding: '10px'}}>Email</label>
                             <InputText id="in" value={this.state.email} onChange={(e) => this.setState({email: e.target.value})} />
+                            <label style={{padding: '10px'}}>@gmail.com</label>
                         </span>  
                     </Dialog>
                     <Dialog header="You have unsaved Changes" footer={footer} visible={this.state.showWarning} style={{width: '50vw'}} modal={true} onHide={this.onHideWarning}>
@@ -192,7 +193,7 @@ class Employees extends React.Component {
                     <Button id="addB" label="Add Employee" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>
                   </div>
                   <div>
-                    <DataTable value={this.state.users} scrollable={true}scrollHeight="300px">
+                    <DataTable value={this.state.users} scrollable={true}scrollHeight="20vw">
                             <Column field="email" header="Email" filter={true} filterMatchMode={"contains"} filterType={"inputtext"}/>
                             <Column field="isActive" header="Active " style={{textAlign:'center'}} body={ (rowData, column) => (
                               <Checkbox onChange={(e) => {this.changeActive(rowData, e)}} checked={this.isActive(rowData)} />) }/>

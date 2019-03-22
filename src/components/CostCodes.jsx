@@ -198,7 +198,7 @@ class CostCodes extends React.Component {
                     <Button id="addB" label="Add Cost Code" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>
                   </div>
                   <div>
-                    <DataTable value={this.state.codes} scrollable={true}scrollHeight="300px"selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
+                    <DataTable value={this.state.codes} scrollable={true}scrollHeight="20vw"selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
                             <Column field="code" header="Code" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} />
                             <Column field="description" header="Description" editor={this.descEditor}/>
                             <Column field="codeGroup" header="Code Group" editor={this.groupEditor}/>

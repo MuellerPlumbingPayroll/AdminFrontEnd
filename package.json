@@ -6,6 +6,7 @@
     "axios": "^0.18.0",
     "classnames": "^2.2.5",
     "node-sass": "^4.11.0",
+    "papaparse": "^4.6.3",
     "primeicons": "^1.0.0",
     "primereact": "^3.0.0",
     "react": "^16.7.0",
