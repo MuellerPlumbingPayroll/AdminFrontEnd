@@ -194,9 +194,11 @@ class Employees extends React.Component {
                   </div>
                   <div>
                     <DataTable value={this.state.users} scrollable={true}scrollHeight="20vw">
-                            <Column field="email" header="Email" filter={true} filterMatchMode={"contains"} filterType={"inputtext"}/>
-                            <Column field="isActive" header="Active " style={{textAlign:'center'}} body={ (rowData, column) => (
-                              <Checkbox onChange={(e) => {this.changeActive(rowData, e)}} checked={this.isActive(rowData)} />) }/>
+                      <Column field="firstName" header="First Name" filter={true} filterMatchMode={"contains"} filterType={"inputtext"}/>
+                      <Column field="lastName" header="Last Name" filter={true} filterMatchMode={"contains"} filterType={"inputtext"}/>
+                      <Column field="email" header="Email" filter={true} filterMatchMode={"contains"} filterType={"inputtext"}/>
+                      <Column field="isActive" header="Active " style={{textAlign:'center'}} body={ (rowData, column) => (
+                        <Checkbox onChange={(e) => {this.changeActive(rowData, e)}} checked={this.isActive(rowData)} />) }/>
                     </DataTable>
                   </div>  
                   <div className="saveChanges" style={{paddingBottom: '5px'}}>

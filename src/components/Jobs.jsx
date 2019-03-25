@@ -318,12 +318,13 @@ class Jobs extends React.Component {
                   </div>
                 <div>
                   <DataTable value={this.state.jobs} scrollable={true} scrollHeight="14vw" selection={this.state.selected} onSelectionChange={e => this.setState({selected: e.value})}>
-                          <Column field="clientName" header="Client" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} editor={this.clientEditor}/>
-                          <Column field="address" header="Address" editor={this.addressEditor}/>
-                          <Column field="isActive" header="Active " style={{textAlign:'center'}} body={ (rowData, column) => (
-                              <Checkbox onChange={(e) => {this.changeActive(rowData, e)}} checked={this.isActive(rowData)} />) }/>
-                          <Column selectionMode="multiple" field="del" header="Delete " style={{textAlign:'center'}} />
-                      </DataTable>
+                      <Column field="jobNumber" header="Job Number" filter={true} filterMatchMode={"contains"} filterType={"inputtext"}/>
+                      <Column field="clientName" header="Client" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} editor={this.clientEditor}/>
+                      <Column field="address" header="Address" editor={this.addressEditor}/>
+                      <Column field="isActive" header="Active " style={{textAlign:'center'}} body={ (rowData, column) => (
+                          <Checkbox onChange={(e) => {this.changeActive(rowData, e)}} checked={this.isActive(rowData)} />) }/>
+                      <Column selectionMode="multiple" field="del" header="Delete " style={{textAlign:'center'}} />
+                  </DataTable>
                 </div>  
               </div>
               <div>
