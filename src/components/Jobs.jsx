@@ -216,7 +216,6 @@ class Jobs extends React.Component {
 
   saveToAPI = async() => {
     try{
-      console.log(this.state.resultsJSON);
       let url = 'https://api-dot-muller-plumbing-salary.appspot.com/jobs';
       await axios.post(url, this.state.resultsJSON);
     } catch (e){

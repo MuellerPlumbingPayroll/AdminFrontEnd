@@ -81,7 +81,6 @@ class Employees extends React.Component {
       let newUpRows = [...this.state.updatedRows];
       newUpRows.push(this.state.checkedRow);
       this.setState({updatedRows: newUpRows});
-      console.log(this.state.users[ind]);
     }
     this.onHideActive();
     if(this.state.warningShown === false){
@@ -137,7 +136,6 @@ class Employees extends React.Component {
       try{
         let url = 'https://api-dot-muller-plumbing-salary.appspot.com/users';
         let data = {email: `${this.state.email}@gmail.com`, isActive: true, firstName: this.state.firstName, lastName: this.state.lastName};
-        console.log(data);
         await axios.post(url, data);
       } catch (e){
         console.error(e);
@@ -166,7 +164,6 @@ class Employees extends React.Component {
             delete temp['dateToRemove'];
           }
           delete temp['id'];
-          console.log(temp);
           await axios.post(url, temp);
         } catch (e){
           console.error(e);

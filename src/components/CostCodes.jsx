@@ -106,7 +106,6 @@ class CostCodes extends React.Component {
         this.setState({codes: []});
       }
       this.setState({selected: []});
-      console.log(this.state.updatedRows);
       if(this.state.updatedRows.length === 0){
         this.growl.clear();
         this.setState({warningShown: false});
