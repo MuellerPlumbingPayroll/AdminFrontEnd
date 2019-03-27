@@ -7,6 +7,7 @@ import { Column } from 'primereact/column';
 import { Checkbox } from 'primereact/checkbox';
 import { InputText } from 'primereact/inputtext';
 import { Dialog } from 'primereact/dialog';
+import { Growl } from 'primereact/growl';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-light/theme.css';
@@ -37,6 +38,8 @@ class Jobs extends React.Component {
       showFileSuccess: false,
       results: null,
       resultsJSON: null,
+      jobNumber: "",
+      warningShown: false
     };
   }
 
@@ -83,17 +86,20 @@ class Jobs extends React.Component {
       let newUpRows = [...this.state.updatedRows];
       newUpRows.push(updatedjobs[props.rowIndex]);
       this.setState({updatedRows: newUpRows});
+      if(this.state.warningShown === false){
+        this.growl.show({severity: 'warn', summary: 'You have unsaved changes', detail:'Please click the "Save Changes" button to save these changes before leaving the page.', closable: false, sticky: true});
+        this.setState({warningShown: true});
+      }
     }
     this.setState({jobs: updatedjobs});
   }
 
   onHideYes = async () => {
-    if(this.state.client !== "" && this.state.address !== "" && this.state.activity !== null){
-      //Add here
+    if(this.state.jobNumber !== "" && this.state.client !== "" && this.state.address !== "" && this.state.activity !== null){
       try{
         let url = 'https://api-dot-muller-plumbing-salary.appspot.com/jobs';
         let toAdd = []
-        toAdd.push( {id: null, clientName: this.state.client, address: this.state.address, isActive: this.state.activity});
+        toAdd.push( {id: null, jobNumber: this.state.jobNumber, clientName: this.state.client, address: this.state.address, isActive: this.state.activity});
         await axios.post(url, toAdd);
       } catch (e){
         console.error(e);
@@ -106,6 +112,7 @@ class Jobs extends React.Component {
         this.setState({jobs: []});
       }
       this.setState({client: ""});
+      this.setState({jobNumber: ""});
       this.setState({address: ""});
       this.setState({activity: false});
       this.setState({visible: false});
@@ -116,7 +123,7 @@ class Jobs extends React.Component {
 
   onHide = () => {
     this.setState({visible: false});
-    this.setState({client: ""});
+    this.setState({client: "", jobNumber: ""});
     this.setState({address: ""});
     this.setState({activity: false});
   }  
@@ -162,6 +169,10 @@ class Jobs extends React.Component {
         this.setState({jobs: []});
       }
       this.setState({selected: []});
+      if(this.state.updatedRows.length === 0){
+        this.growl.clear();
+        this.setState({warningShown: false});
+      }
     }
   }
 
@@ -184,7 +195,7 @@ class Jobs extends React.Component {
       data[i].splice(2,3);
       data[i].splice(3,2);
       //remove line below to add jobNumber
-      data[i].splice(0,1);
+      //data[i].splice(0,1);
       if(i !== 0){
         data[i].push(true);
         data[i].push(null);
@@ -227,6 +238,7 @@ class Jobs extends React.Component {
     if(re.errors.length === 0){
       this.setState({results: re.data});
       this.saveCSV();
+      this.setState({file: null});
     } else {
       this.setState({showFileWarning: true});
     }
@@ -237,9 +249,11 @@ class Jobs extends React.Component {
   }
 
   handleUpload = (saveResults) => {
-    Papa.parse(this.state.file, {complete: function(results){
-      saveResults(results);
-    }});
+    if(this.state.file !== null){
+      Papa.parse(this.state.file, {complete: function(results){
+        saveResults(results);
+      }});
+    }
   }
 
   saveChanges = async () => {
@@ -258,6 +272,8 @@ class Jobs extends React.Component {
         this.setState({jobs: []});
       }
       this.setState({updatedRows: []});
+      this.growl.clear();
+      this.setState({warningShown: false});
     }
   }
 
@@ -292,6 +308,10 @@ class Jobs extends React.Component {
                     </span>
                   </Dialog>  
                   <Dialog header="Add Job" footer={footer} visible={this.state.visible} style={{width: '50vw'}} modal={true} onHide={this.onHide}>
+                    <span style={{paddingTop:'25px', display: 'block'}}>
+                        <label style={{padding: '10px'}}>Job Number</label>
+                        <InputText id="in" value={this.state.jobNumber} onChange={(e) => this.setState({jobNumber: e.target.value})} />
+                    </span> 
                     <span style={{paddingTop:'25px', display: 'block'}}>
                         <label style={{padding: '10px'}}>Client</label>
                         <InputText id="in" value={this.state.client} onChange={(e) => this.setState({client: e.target.value})} />
@@ -340,6 +360,7 @@ class Jobs extends React.Component {
                   <Button label="Upload" icon="pi pi-upload" onClick={this.callUpload}/>
                 </div>
               </div>
+              <Growl ref={(el) => { this.growl = el; }}></Growl>
             </div>
         </div>
       </div>
