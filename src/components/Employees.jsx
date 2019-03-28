@@ -162,6 +162,11 @@ class Employees extends React.Component {
           let temp = this.state.updatedRows[i];
           if( temp['dateToRemove'] === null){
             delete temp['dateToRemove'];
+          } else {
+            let time = temp['dateToRemove']['_seconds'];
+            let newDate = new Date();
+            newDate.setUTCSeconds(time);
+            temp['dateToRemove'] = newDate;
           }
           delete temp['id'];
           await axios.post(url, temp);
