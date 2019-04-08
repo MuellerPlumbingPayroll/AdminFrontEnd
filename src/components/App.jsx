@@ -56,8 +56,8 @@ class App extends React.Component {
     const topBar = classNames('layout-topbar');
     return (
       <div className={wrapperClass}>
-        <div className={topBar} style={{ fontFamily: 'bakersville', fontStyle: 'bold', fontSize: '50px' }}>
-          Muller Plumbing
+        <div className={topBar} style={{ fontFamily: 'bakersville', fontStyle: 'bold', fontSize: '3vw' }}>
+          Muller Plumbing and Heating
         </div>
         <div className={sidebarClassName}>
           <Menu model={this.state.listOf}/>
