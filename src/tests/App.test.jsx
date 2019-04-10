@@ -13,7 +13,7 @@ import { mount, shallow } from 'enzyme';
 
 //jest.mock('axios');
 
-
+/*
 describe('Employees', ()=> {
   it('should render correctly in "debug" mode', () => {
     const comp = shallow(<Employees debug />);
@@ -29,7 +29,7 @@ describe('Employees', ()=> {
     expect(comp).toMatchSnapshot();
     comp.unmount();
   });
-  */
+  
   let comp;
   beforeEach(() => {
     comp = shallow(<Employees />);
@@ -45,7 +45,7 @@ describe('Employees', ()=> {
     inst.changeActive([{email: "test", isActive: true}], {checked: false});
     expect(comp.state('goActive')).toEqual(true);
   });
-  it('should call action Active', () =>{
+  /*it('should call action Active', () =>{
     const inst = comp.instance();
     comp.setState({checkedRow: comp.state('users')[0], event: {checked: false}});
     inst.actionActive();
@@ -55,6 +55,7 @@ describe('Employees', ()=> {
     inst.actionActive();
     expect(comp.state('users')).not.toEqual(null);
   })
+  
   it('should call onHide', () => {
     const inst = comp.instance();
     comp.setState({visible: true});
@@ -81,6 +82,7 @@ describe('Employees', ()=> {
     expect(comp.state('showWarning')).toEqual(false);
   });
 });
+*/
 
 describe('CostCodes', ()=> {
   it('should render correctly in "debug" mode', () => {
@@ -140,11 +142,13 @@ describe('CostCodes', ()=> {
     inst.onHideWarning();
     expect(comp.state('showWarning')).toEqual(false);
   });
+  /*
   it('should call onEditorValueChange', () => {
     const inst = comp.instance();
     inst.onEditorValueChange({rowIndex: 0,field: 'code'}, 'Test');
     expect(comp.state('codes')[0].code).toEqual("Test");
   });
+  */
   it('should call descEditor', () => {
     const inst = comp.instance();
     const props = {rowIndex: 0};
@@ -217,12 +221,13 @@ it('should call onHideWarning', () => {
     inst.onChanges({checked: false});
     expect(comp.state('activity')).toEqual(false);
   });
+  /*
   it('should call onEditorValueChange', () => {
     const inst = comp.instance();
     inst.onEditorValueChange({rowIndex: 0,field: 'clientName'}, 'Test123');
     expect(comp.state('jobs')[0].clientName).toEqual("Test123");
   });
-  
+  */
   it('should call clientEditor', () => {
     const inst = comp.instance();
     const props = {rowIndex: 0};
@@ -237,6 +242,7 @@ it('should call onHideWarning', () => {
 });
 
 describe('TimeSheets', ()=> {
+  /*
   it('should render correctly in "debug" mode', () => {
     const comp = shallow(<TimeSheets debug />);
     expect(comp).toMatchSnapshot();
@@ -316,6 +322,7 @@ describe('TimeSheets', ()=> {
     const date = inst.restrictDate();
     expect(date).toEqual(new Date((new Date()).getFullYear()-1, 0, 1));
   });
+  /*
   it('should call checkDownload', () => {
     const comp = shallow(<TimeSheets />);
     const inst = comp.instance();
@@ -323,7 +330,7 @@ describe('TimeSheets', ()=> {
     expect(comp.state('errorEmps')).toEqual(true);
     expect(comp.state('errorDate')).toEqual(true);
   });
-
+  */
 
 });
 

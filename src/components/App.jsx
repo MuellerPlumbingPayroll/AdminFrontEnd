@@ -22,6 +22,7 @@ class App extends React.Component {
       // layoutColorMode: 'dark',
       mobileMenuActive: false,
       mode: 'welcome',
+      //Menu options
       listOf:[
         { label: 'Manage Employees', icon: 'pi pi-fw pi-users', command:(e)=>{this.setState({mode: 'emps'})}},
         { label: 'Manage Jobs', icon: 'pi pi-fw pi-home' , command:(e)=>{this.setState({mode: 'jobs'})}},
@@ -31,6 +32,7 @@ class App extends React.Component {
     };
   }
 
+    //Which page to render
     renderPage = () => {
     if(this.state.mode === 'welcome'){
       return <Welcome/>;

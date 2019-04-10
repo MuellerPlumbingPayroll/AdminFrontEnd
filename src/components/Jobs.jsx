@@ -22,7 +22,6 @@ class Jobs extends React.Component {
     super(props);
     this.state = {
       layoutMode: 'static',
-      //layoutColorMode: 'dark',
       mobileMenuActive: false,
       jobs: null,
       visible: false,
@@ -31,7 +30,6 @@ class Jobs extends React.Component {
       activity: false,
       selected: [],
       updatedRows: [],
-      showWarning: false,
       emptyFields: false,
       file: null,
       showFileWarning: false,
@@ -43,6 +41,9 @@ class Jobs extends React.Component {
     };
   }
 
+
+  //This function is run when this component is loaded
+  //This function uses a GET request to load all the job information
   componentDidMount = async () =>{
     try{
       const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
@@ -53,10 +54,12 @@ class Jobs extends React.Component {
     }
   }
   
+  //Returns whether the job is active
   isActive = (rowData) => {
     return rowData.isActive;
   }
 
+  //This function changes the activity of the job in question
   changeActive = (rowData, e) =>{
     let upjobs = [...this.state.jobs];
     let ind = this.state.jobs.indexOf(rowData);
@@ -70,13 +73,19 @@ class Jobs extends React.Component {
       let newUpRows = [...this.state.updatedRows];
       newUpRows.push(rowData);
       this.setState({updatedRows: newUpRows});
+      if(this.state.warningShown === false){
+        this.growl.show({severity: 'warn', summary: 'You have unsaved changes', detail:'Please click the "Save Changes" button to save these changes before leaving the page.', closable: false, sticky: true});
+        this.setState({warningShown: true});
+      }
     }
   }
 
+  //This function is called every time there is a change to data through user edits
   onEditorValueChange = (props, value) =>{
     let updatedjobs = [...this.state.jobs];
     updatedjobs[props.rowIndex][props.field] = value;
     let notAdded = true;
+    //Only adds rows that were updated if they haven't already been added to the list of rows that are updated
     for(let i = 0; i < this.state.updatedRows.length; i++){
       if(this.state.updatedRows[i]['id'] === updatedjobs[props.rowIndex]['id']){
         notAdded = false;
@@ -86,6 +95,7 @@ class Jobs extends React.Component {
       let newUpRows = [...this.state.updatedRows];
       newUpRows.push(updatedjobs[props.rowIndex]);
       this.setState({updatedRows: newUpRows});
+      //Warns user that there are unsaved changes
       if(this.state.warningShown === false){
         this.growl.show({severity: 'warn', summary: 'You have unsaved changes', detail:'Please click the "Save Changes" button to save these changes before leaving the page.', closable: false, sticky: true});
         this.setState({warningShown: true});
@@ -94,6 +104,7 @@ class Jobs extends React.Component {
     this.setState({jobs: updatedjobs});
   }
 
+  //Adds a job to the database
   onHideYes = async () => {
     if(this.state.jobNumber !== "" && this.state.client !== "" && this.state.address !== "" && this.state.activity !== null){
       try{
@@ -111,45 +122,52 @@ class Jobs extends React.Component {
         console.error(e);
         this.setState({jobs: []});
       }
+      //Rests values
       this.setState({client: ""});
       this.setState({jobNumber: ""});
       this.setState({address: ""});
       this.setState({activity: false});
       this.setState({visible: false});
     } else {
+      //Show alert that there are empty fields
       this.setState({emptyFields: true});
     }  
   }
 
+  //Does not add job to database and resets values
   onHide = () => {
     this.setState({visible: false});
     this.setState({client: "", jobNumber: ""});
     this.setState({address: ""});
     this.setState({activity: false});
   }  
-  onHideWarning = () => {
-    this.setState({showWarning: false});
-  }
+
+  //Tells user that there has been an error uploading a file
   onHideFileWarning = () => {
     this.setState({showFileWarning: false});
   }
+
+  //Tells user that the file has successfully uploaded
   onHideFileSuccess = () => {
     this.setState({showFileSuccess: false});
   }
 
+  //Editor for client field
   clientEditor = (props) => {
       return <InputText type="text" value={this.state.jobs[props.rowIndex]['clientName']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 
+  //Editor for address field
   addressEditor = (props) => {
     return <InputText type="text" value={this.state.jobs[props.rowIndex]['address']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 
-
+  //Deletes a job
   delete = async() => {
     if(this.state.selected.length > 0){
       for(let i = 0; i < this.state.selected.length; i++){
         let tempId = this.state.selected[i]['id'];
+        //DELETE request from API
         let url = `https://api-dot-muller-plumbing-salary.appspot.com/jobs/${tempId}`;
         try{
           await axios.delete(url);
@@ -161,6 +179,7 @@ class Jobs extends React.Component {
           console.error(e);
         }
       }
+      //Refreshing the jobs values
       try{
         const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
         this.setState({jobs: newJobs.data});
@@ -176,6 +195,7 @@ class Jobs extends React.Component {
     }
   }
 
+  //Changes activity
   onChanges = (e) => {
     if(e.checked){
       this.setState({activity: true});
@@ -184,29 +204,46 @@ class Jobs extends React.Component {
     }
   }
 
+  //Updating the file
   handleselectedFile = event => {
     this.setState({file: event.target.files[0]});
   }
 
+  //Parsing the data in the csv file
   saveCSV = () => {
     let data = [...this.state.results];
     data[0] = ["jobNumber", "clientName", "ig1", "ig2", "ig3", "address", "ig4", "ig5", "isActive", "id"];
     for(let i = 0; i < data.length; i++){
+      //removing unwanted columns
       data[i].splice(2,3);
       data[i].splice(3,2);
-      //remove line below to add jobNumber
-      //data[i].splice(0,1);
+      //adding activity and id
       if(i !== 0){
         data[i].push(true);
         data[i].push(null);
       }
     }
-    this.setState({results: data});
-    let resJSON = [];
+    let allData = []
+    allData[0] = data[0];
+    //Checking that the job number isn't already in use
     for(let i = 1; i < data.length; i++){
+      let found = false;
+      for(let j = 0; j < this.state.jobs.length; j++){
+        if(this.state.jobs[j]["jobNumber"] === data[i][0]){
+          found = true;
+        }
+      }
+      if(found === false){
+        allData.push(data[i]);
+      }
+    }
+    console.log(allData);
+    this.setState({results: allData});
+    let resJSON = [];
+    for(let i = 1; i < allData.length; i++){
       let hash = {};
-      for(let j = 0; j < data[0].length; j++){
-        hash[data[0][j]] = data[i][j];
+      for(let j = 0; j < allData[0].length; j++){
+        hash[allData[0][j]] = allData[i][j];
       }
       resJSON.push(hash);
     }
@@ -214,25 +251,31 @@ class Jobs extends React.Component {
     this.saveToAPI();
   }
 
+  //Adding all data to database
   saveToAPI = async() => {
+    let success = true;
     try{
       let url = 'https://api-dot-muller-plumbing-salary.appspot.com/jobs';
       await axios.post(url, this.state.resultsJSON);
     } catch (e){
+      success = false;
       this.setState({showFileWarning: true});
       console.error(e);
     }
-    try{
-      const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
-      this.setState({jobs: newJobs.data});
-      this.setState({showFileSuccess: true});
-    } catch (e){
-      this.setState({showFileWarning: true});
-      console.error(e);
-      this.setState({jobs: []});
+    if(success){
+      try{
+        const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
+        this.setState({jobs: newJobs.data});
+        this.setState({showFileSuccess: true});
+      } catch (e){
+        this.setState({showFileWarning: true});
+        console.error(e);
+        this.setState({jobs: []});
+      }
     }
   }
 
+  //Something with the file
   saveResults = (re) => {
     if(re.errors.length === 0){
       this.setState({results: re.data});
@@ -243,10 +286,12 @@ class Jobs extends React.Component {
     }
   }
 
+  //Calls to upload the file
   callUpload = () => {
     this.handleUpload(this.saveResults);
   }
 
+  //Parsing from csv to json
   handleUpload = (saveResults) => {
     if(this.state.file !== null){
       Papa.parse(this.state.file, {complete: function(results){
@@ -322,11 +367,6 @@ class Jobs extends React.Component {
                     <span style={{paddingTop:'25px', display: 'block'}}>
                         <label style={{padding: '10px'}}>Active</label>
                         <Checkbox id="in" checked={this.state.activity} onChange={this.onChanges} />
-                    </span>  
-                  </Dialog>
-                  <Dialog header="You have unsaved Changes" footer={footer} visible={this.state.showWarning} style={{width: '50vw'}} modal={true} onHide={this.onHideWarning}>
-                    <span style={{paddingTop:'25px', display: 'block'}}>
-                        <label style={{padding: '10px'}}>The changes you made have not been saved</label>
                     </span>  
                   </Dialog>
                   <div style={{paddingBottom: '5px', paddingTop: '5px', width: '15%'}}>

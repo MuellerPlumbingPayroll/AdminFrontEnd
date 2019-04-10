@@ -36,6 +36,8 @@ class CostCodes extends React.Component {
     };
   }
 
+  //This function is run when this component is loaded
+  //This function uses a GET request to load all the cost codes information
   componentDidMount = async () =>{
     try{
       const newCodes = await axios('https://api-dot-muller-plumbing-salary.appspot.com/cost-code');
@@ -46,6 +48,7 @@ class CostCodes extends React.Component {
     }
   }
 
+  //Resets values
   onHide = () => {
     this.setState({visible: false});
     this.setState({code: ""});
