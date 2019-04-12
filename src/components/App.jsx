@@ -11,12 +11,34 @@ import CostCodes from './CostCodes';
 import Employees from './Employees';
 import Welcome from './Welcome';
 import Jobs from './Jobs';
+import firebase from "firebase/app";
+import "firebase/auth";
+import axios from "axios";
+const config = {
+  apiKey: "AIzaSyDrgNlR0m7XWkP3xXUcxJakkgih4uG7j6k",
+  authDomain: "muller-plumbing-salary.firebaseapp.com",
+  databaseURL: "https://muller-plumbing-salary.firebaseio.com",
+  projectId: "muller-plumbing-salary",
+  storageBucket: "muller-plumbing-salary.appspot.com",
+  messagingSenderId: "717687086763"
+};
+firebase.initializeApp(config);
 
+firebase.auth().onAuthStateChanged(async function(user) {
+  if (user) {
+    axios.defaults.headers.common = {'Authorization': `bearer ${await user.getIdToken(true)}`}
+  } else {
+    let provider = new firebase.auth.GoogleAuthProvider();
+    firebase.auth().signInWithRedirect(provider);
+  }
+});
 // eslint-disable-next-line no-undef
 
 class App extends React.Component {
   constructor(props) {
     super(props);
+
+
     this.state = {
       layoutMode: 'static',
       // layoutColorMode: 'dark',
