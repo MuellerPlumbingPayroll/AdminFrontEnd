@@ -26,10 +26,18 @@ firebase.initializeApp(config);
 
 firebase.auth().onAuthStateChanged(async function(user) {
   if (user) {
-    axios.defaults.headers.common = {'Authorization': `bearer ${await user.getIdToken(true)}`}
+    try{
+      let result = await axios(`https://api-dot-muller-plumbing-salary.appspot.com/authenticate/admin/${user.email}`)
+      axios.defaults.headers.common = {'Authorization': `bearer ${await user.getIdToken(true)}`}
+    }catch(e){
+      await firebase.auth().signOut();
+    }
+
+
   } else {
     let provider = new firebase.auth.GoogleAuthProvider();
     firebase.auth().signInWithRedirect(provider);
+
   }
 });
 // eslint-disable-next-line no-undef
@@ -37,7 +45,6 @@ firebase.auth().onAuthStateChanged(async function(user) {
 class App extends React.Component {
   constructor(props) {
     super(props);
-
 
     this.state = {
       layoutMode: 'static',
