@@ -7,6 +7,7 @@ import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { InputText } from 'primereact/inputtext';
 import { Growl } from 'primereact/growl';
+import { Dropdown } from 'primereact/dropdown';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-light/theme.css';
@@ -25,7 +26,7 @@ class CostCodes extends React.Component {
       mobileMenuActive: false,
       code: "",
       desc: "",
-      codeGroup: "",
+      codeGroup: null,
       selected: [],
       visible: false,
       codes: null,
@@ -53,7 +54,7 @@ class CostCodes extends React.Component {
     this.setState({visible: false});
     this.setState({code: ""});
     this.setState({desc: ""});
-    this.setState({codeGroup: ""});
+    this.setState({codeGroup: null});
   }
 
   onHideWarning = () => {
@@ -61,11 +62,12 @@ class CostCodes extends React.Component {
   }
 
   onHideYes = async () => {
-    if(this.state.code !== "" && this.state.desc !== "" && this.state.codeGroup !== ""){
+    if(this.state.code !== "" && this.state.desc !== "" && this.state.codeGroup !== null){
       //Add here
       try{
         let url = 'https://api-dot-muller-plumbing-salary.appspot.com/cost-code';
-        let data = {code: this.state.code, codeGroup: this.state.codeGroup, description: this.state.desc};
+        console.log(this.state.codeGroup.value);
+        let data = {code: this.state.code, codeGroup: this.state.codeGroup.value, description: this.state.desc};
         await axios.post(url, data);
       } catch (e){
         console.error(e);
@@ -79,7 +81,7 @@ class CostCodes extends React.Component {
       }
       this.setState({code: ""});
       this.setState({desc: ""});
-      this.setState({codeGroup: ""});
+      this.setState({codeGroup: null});
       this.setState({visible: false});
     } else {
       this.setState({emptyFields: true});
@@ -173,6 +175,11 @@ class CostCodes extends React.Component {
 
 
   render() {
+
+    const codeGroups = [
+        {name: 'Plumbing', value: 'PLUMBING'},
+        {name: 'Service', value: 'SERVICE'}
+    ];
   
     const wrapperClass = classNames('layout-wrapper', {
       'layout-static': this.state.layoutMode === 'static',
@@ -201,13 +208,13 @@ class CostCodes extends React.Component {
                         <InputText id="in" value={this.state.code} onChange={(e) => this.setState({code: e.target.value})} />
                     </span> 
                     <span style={{paddingTop:'25px', display: 'block'}}>
+                        <label style={{padding: '10px'}}>Code Group</label>
+                        <Dropdown value={this.state.codeGroup} options={codeGroups} onChange={(e) => {this.setState({codeGroup: e.value})}} placeholder="Select a Group" optionLabel='name' style={{width:'35%'}}/>
+                    </span>
+                    <span style={{paddingTop:'25px', display: 'block'}}>
                         <label style={{padding: '10px'}}>Description</label>
                         <InputText id="in" value={this.state.desc} onChange={(e) => this.setState({desc: e.target.value})} />
                     </span>  
-                    <span style={{paddingTop:'25px', display: 'block'}}>
-                        <label style={{padding: '10px'}}>Code Group</label>
-                        <InputText id="in" value={this.state.codeGroup} onChange={(e) => this.setState({codeGroup: e.target.value})} />
-                    </span>
                   </Dialog>
                   <div style={{paddingBottom: '5px'}}>
                     <Button id="addB" label="Add Cost Code" className="p-button-danger" width="20px" onClick={(e) => this.setState({visible: true})}/>

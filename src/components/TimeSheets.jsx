@@ -42,7 +42,7 @@ class TimeSheets extends React.Component {
           notAdmin.push(newUsers.data[i]);
         }
       }
-      this.setState({users: newUsers.data});
+      this.setState({users: notAdmin});
     } catch (e){
       console.error(e);
       this.setState({users: []});
@@ -77,15 +77,15 @@ class TimeSheets extends React.Component {
     } else {
       let dates = [];
       let currentDate = this.goForwardAYear(starting, 6);
-      currentDate.setHours(11,59,59);
+      currentDate.setHours(23,59,59);
       let newDates = [starting, currentDate];
       dates.push(newDates);
-      ending.setHours(11,59,59);
+      ending.setHours(23,59,59);
       let counter = 0;
       while(currentDate.getTime() !== ending.getTime() && counter < 5){
         let newStart = this.goForwardAYear(currentDate,1);
         currentDate = this.goForwardAYear(newStart, 6);
-        currentDate.setHours(11,59,59);
+        currentDate.setHours(23,59,59);
         let range = [newStart,currentDate];
         dates.push(range);
         counter++;
@@ -148,7 +148,23 @@ class TimeSheets extends React.Component {
     this.setState({startDate: sd, endDate: ed});
   }
 
-  checkDownload = () => {
+  getEntries = async (start, end, ids) => {
+    try{
+      console.log(JSON.stringify(ids));
+      let idsString = JSON.stringify(ids);
+      let startString = JSON.stringify(start);
+      let endString = JSON.stringify(end);
+      //console.log(start);
+      //console.log(end);
+      const timecards = await axios(`https://api-dot-muller-plumbing-salary.appspot.com/timecards/${idsString}/${startString}/${endString}`);
+      return timecards.data;
+    } catch (e){
+      console.error(e);
+      return ["nothing", "actually nothing"];
+    }
+  }
+
+  checkDownload = async () => {
     if(this.state.selected.length === 0){
       this.setState({errorEmps: true});
     } else if((this.state.startDate === null) || (this.state.endDate === null)){
@@ -160,70 +176,133 @@ class TimeSheets extends React.Component {
       }
       let ranges = this.findPayPeriods(this.state.startDate, this.state.endDate);
       if(ranges !== null){
-        let doc = new jsPDF({orientation: 'landscape'});
-        let testThing = [
-          {client: "Test1", job: "FunStuff", type: "PLUMBING", wed: 7, thrus: 0, frid: 0, sat: 0, sun: 0, mon: 0, tues: 0},
-          {client: "Test2", job: "FunStuff", type: "PLUMBING", wed: 1, thrus: 0, frid: 0, sat: 0, sun: 0, mon: 0, tues: 0},
-          {client: "Test1", job: "FunStuff", type: "PLUMBING", wed: 0, thrus: 4, frid: 0, sat: 0, sun: 0, mon: 0, tues: 0},
-          {client: "Test2", job: "FunStuff", type: "PLUMBING", wed: 0, thrus: 4, frid: 0, sat: 0, sun: 0, mon: 0, tues: 0},
-          {client: "Test1", job: "FunStuff", type: "PLUMBING", wed: 0, thrus: 0, frid: 8, sat: 0, sun: 0, mon: 0, tues: 0},
-          {client: "Test2", job: "FunStuff", type: "PLUMBING", wed: 0, thrus: 0, frid: 0, sat: 3, sun: 0, mon: 0, tues: 0},
-          {client: "Test1", job: "FunStuff", type: "PLUMBING", wed: 0, thrus: 0, frid: 0, sat: 1, sun: 0, mon: 0, tues: 0},
-          {client: "Test2", job: "FunStuff", type: "PLUMBING", wed: 0, thrus: 0, frid: 0, sat: 4, sun: 0, mon: 0, tues: 0},
-          {client: "Test1", job: "FunStuff", type: "PLUMBING", wed: 0, thrus: 0, frid: 0, sat: 0, sun: 0, mon: 2, tues: 0},
-          {client: "Test2", job: "FunStuff", type: "PLUMBING", wed: 0, thrus: 0, frid: 0, sat: 0, sun: 0, mon: 6, tues: 0},
-          {client: "Test1", job: "FunStuff", type: "PLUMBING", wed: 0, thrus: 0, frid: 0, sat: 0, sun: 0, mon: 0, tues: 8},
-          {client: "Test2", job: "FunStuff", type: "PLUMBING", wed: 0, thrus: 0, frid: 0, sat: 0, sun: 0, mon: 0, tues: 0}
-        ];
-        let arr = [];
-        let hours = [0,0,0,0,0,0,0];
-        for(let i = 0; i < testThing.length; i++){
-          hours[0] += testThing[i]['wed'];
-          hours[1] += testThing[i]['thrus'];
-          hours[2] += testThing[i]['frid'];
-          hours[3] += testThing[i]['sat'];
-          hours[4] += testThing[i]['sun'];
-          hours[5] += testThing[i]['mon'];
-          hours[6] += testThing[i]['tues'];
-          
-          let inner = [];
-          inner.push(testThing[i]['client']);
-          inner.push(testThing[i]['job']);
-          inner.push(testThing[i]['type']);
-          inner.push(testThing[i]['wed']);
-          inner.push(testThing[i]['thrus']);
-          inner.push(testThing[i]['frid']);
-          inner.push(testThing[i]['sat']);
-          inner.push(testThing[i]['sun']);
-          inner.push(testThing[i]['mon']);
-          inner.push(testThing[i]['tues']);
-          arr.push(inner);
-        }  
-        
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
-        "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
-        const wid = {
-          0: {cellWidth: 40},
-          1: {cellWidth: 60},
-          2: {cellWidth: 30},
-          3: {cellWidth: 7},
-          4: {cellWidth: 7},
-          5: {cellWidth: 7},
-          6: {cellWidth: 7},
-          7: {cellWidth: 7},
-          8: {cellWidth: 7},
-          9: {cellWidth: 7}
-          // etc
-        };
-        let inj = "Yes";
-        let names = ["Peter Parker", "Harry Potter"];
 
-        for(let j = 0; j < ranges.length; j++){
-          for(let i = 0; i < names.length; i++){
+        let doc = new jsPDF({orientation: 'landscape'});
+        
+        for(let m = 0; m < ranges.length; m++){
+          //console.log(await this.getEntries(ranges[m][0], ranges[m][1], ids));
+          //let timecards = await this.getEntries(ranges[m][0], ranges[m][1], ids);
+          
+          //Test Data
+          let testEntriesSun = [
+            {clientName: "Acme", job: "stuff", type: "other", timeworked: 2},
+            {clientName: "Bame", job: "stuf2", type: "stuff", timeworked: 2}];
+          let testEntriesWed = [
+            {clientName: "Acme", job: "stuff", type: "other", timeworked: 3},
+            {clientName: "Bame", job: "stuf2", type: "stuff", timeworked: 3}];
+          let testEntriesSat = [
+            {clientName: "Acme", job: "stuff", type: "other", timeworked: 5},
+            {clientName: "Bame", job: "stuf2", type: "stuff", timeworked: 5}];
+          let testEntries = [
+            {clientName: "Acme", job: "stuff", type: "other", timeworked: 4},
+            {clientName: "Bame", job: "stuf2", type: "stuff", timeworked: 4}];
+          let allEntries = [testEntriesSun,testEntries,testEntries,testEntriesWed,testEntries,testEntries,testEntriesSat];
+          let testThing = [
+            {firstName: "Test1", lastName: "Test1", entries: allEntries, injured: true},
+            {firstName: "Test2", lastName: "Test2", entries: allEntries, injured: true},
+            {firstName: "Test3", lastName: "Test3", entries: allEntries, injured: true},
+            {firstName: "Test4", lastName: "Test4", entries: allEntries, injured: true},
+            {firstName: "Test5", lastName: "Test5", entries: allEntries, injured: true},
+            {firstName: "Test6", lastName: "Test6", entries: allEntries, injured: true},
+            {firstName: "Test7", lastName: "Test7", entries: allEntries, injured: true}
+          ];
+
+          //Consts
+          const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
+          "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+          const wid = {
+            0: {cellWidth: 40},
+            1: {cellWidth: 60},
+            2: {cellWidth: 30},
+            3: {cellWidth: 7},
+            4: {cellWidth: 7},
+            5: {cellWidth: 7},
+            6: {cellWidth: 7},
+            7: {cellWidth: 7},
+            8: {cellWidth: 7},
+            9: {cellWidth: 7}
+            // etc
+          };
+
+          //Totalling hours
+          for(let i = 0; i < testThing.length; i++){
+
+            let entryBody = [];
+            let hours = [0,0,0,0,0,0,0];
+            for(let k = 0; k < testThing[i]['entries'].length; k++){
+              for(let j = 0; j < testThing[i]['entries'][k].length; j++){
+                let temp = testThing[i]['entries'][k][j];
+                let inner = [];
+                inner.push(temp['clientName']);
+                inner.push(temp['job']);
+                inner.push(temp['type']);
+                if(k === 0){
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(temp['timeworked']);
+                  inner.push(0);
+                  inner.push(0);
+                } else if (k === 1){
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(temp['timeworked']);
+                  inner.push(0);
+                } else if (k === 2){
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(temp['timeworked']);
+                } else if (k === 3){
+                  inner.push(temp['timeworked']);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                } else if (k === 4){
+                  inner.push(0);
+                  inner.push(temp['timeworked']);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                } else if (k === 5){
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(temp['timeworked']);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                } else if (k === 6){
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(temp['timeworked']);
+                  inner.push(0);
+                  inner.push(0);
+                  inner.push(0);
+                }
+                hours[k] += temp['timeworked'];
+                entryBody.push(inner);
+              }
+            }
+
             if(i !== 0){
               doc.addPage();
             }
-            let st = ranges[j][0];
+
+            let st = ranges[m][0];
             let dateW = st.getDate() + "-" + monthNames[st.getMonth()];
             let dateTh = this.goForwardAYear(st,1).getDate() + "-" + monthNames[st.getMonth()];
             let dateF = this.goForwardAYear(st,2).getDate() + "-" + monthNames[this.goForwardAYear(st,2).getMonth()];
@@ -231,38 +310,42 @@ class TimeSheets extends React.Component {
             let dateSu = this.goForwardAYear(st,4).getDate() + "-" + monthNames[this.goForwardAYear(st,4).getMonth()];
             let dateM = this.goForwardAYear(st,5).getDate() + "-" + monthNames[this.goForwardAYear(st,5).getMonth()];
             let dateTu = this.goForwardAYear(st,6).getDate() + "-" + monthNames[this.goForwardAYear(st,6).getMonth()];
-            
-            doc.text(`${names[i]} ${dateW}-${dateTu}`, 14, 13);
+
+            let injury = testThing[i]['injured'] ? "Yes" : "No";
+           
+            doc.text(`${testThing[i]['firstName']} ${testThing[i]['lastName']} ${dateW}-${dateTu}`, 14, 13);
             doc.autoTable({
               head:[['Client','Job / Description', 'Cost Code Description', `Wed ${dateW}`, `Thurs ${dateTh}`,
               `Fri ${dateF}`, `Sat ${dateSa}`, `Sun ${dateSu}`, `Mon ${dateM}`, `Tues ${dateTu}`]],
-              body:arr,
+              body:entryBody,
               columnStyles: wid,
               pageBreak: 'avoid',
               headStyles: {fillColor: [139, 0, 0]}
             }); 
             doc.autoTable({
-              body:[[`Work injury: ${inj}`, "Totals:", hours[0], hours[1], hours[2], hours[3], hours[4], hours[5], hours[6]]],
+              body:[[`Work injury: ${injury}`, "Totals:", hours[3], hours[4], hours[5], hours[6], hours[0], hours[1], hours[2]]],
               columnStyles: {
                 0: {fontSize: 12, fontStyle: 'bold', cellWidth: 70, halign: 'center'},
-                1: {fontSize: 12, fontStyle: 'bold', cellWidth: 30, halign: 'right'},
-                2: {fontSize: 12, fontStyle: 'bold', cellWidth: 15},
-                3: {fontSize: 12, fontStyle: 'bold', cellWidth: 15},
-                4: {fontSize: 12, fontStyle: 'bold', cellWidth: 15},
-                5: {fontSize: 12, fontStyle: 'bold', cellWidth: 15},
-                6: {fontSize: 12, fontStyle: 'bold', cellWidth: 15},
-                7: {fontSize: 12, fontStyle: 'bold', cellWidth: 15},
-                8: {fontSize: 12, fontStyle: 'bold', cellWidth: 15}
+                1: {fontSize: 12, fontStyle: 'bold', cellWidth: 38, halign: 'right'},
+                2: {fontSize: 12, fontStyle: 'bold', cellWidth: 17, halign: 'right'},
+                3: {fontSize: 12, fontStyle: 'bold', cellWidth: 17, halign: 'right'},
+                4: {fontSize: 12, fontStyle: 'bold', cellWidth: 17, halign: 'right'},
+                5: {fontSize: 12, fontStyle: 'bold', cellWidth: 17, halign: 'right'},
+                6: {fontSize: 12, fontStyle: 'bold', cellWidth: 17, halign: 'right'},
+                7: {fontSize: 12, fontStyle: 'bold', cellWidth: 17, halign: 'right'},
+                8: {fontSize: 12, fontStyle: 'bold', cellWidth: 25, halign: 'center'}
               }
             });
           } 
-          if(j+1 !== ranges.length){
+          
+          if(m+1 !== ranges.length){
             doc.addPage();  
           }
         }
         let start = (this.state.startDate.getMonth()+1) + "-" + this.state.startDate.getDate() + "-" + this.state.startDate.getFullYear();
         let end = (this.state.endDate.getMonth()+1) + "-" + this.state.endDate.getDate() + "-" + this.state.endDate.getFullYear();
         doc.save(`TimeSheets${start}-${end}.pdf`); 
+        
       }
     }
   }
