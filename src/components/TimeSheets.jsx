@@ -180,31 +180,6 @@ class TimeSheets extends React.Component {
         for(let m = 0; m < ranges.length; m++){
           console.log(await this.getEntries(ranges[m][0], ranges[m][1], ids));
           let timecards = await this.getEntries(ranges[m][0], ranges[m][1], ids);
-          
-          //Test Data
-          /*let testEntriesSun = [
-            {clientName: "Acme", job: "stuff", type: "other", timeworked: 2},
-            {clientName: "Bame", job: "stuf2", type: "stuff", timeworked: 2}];
-          let testEntriesWed = [
-            {clientName: "Acme", job: "stuff", type: "other", timeworked: 3},
-            {clientName: "Bame", job: "stuf2", type: "stuff", timeworked: 3}];
-          let testEntriesSat = [
-            {clientName: "Acme", job: "stuff", type: "other", timeworked: 5},
-            {clientName: "Bame", job: "stuf2", type: "stuff", timeworked: 5}];
-          let testEntries = [
-            {clientName: "Acme", job: "stuff", type: "other", timeworked: 4},
-            {clientName: "Bame", job: "stuf2", type: "stuff", timeworked: 4}];
-          let allEntries = [testEntriesSun,testEntries,testEntries,testEntriesWed,testEntries,testEntries,testEntriesSat];
-          let timecards = [
-            {firstName: "Test1", lastName: "Test1", entries: allEntries, injured: true},
-            {firstName: "Test2", lastName: "Test2", entries: allEntries, injured: true},
-            {firstName: "Test3", lastName: "Test3", entries: allEntries, injured: true},
-            {firstName: "Test4", lastName: "Test4", entries: allEntries, injured: true},
-            {firstName: "Test5", lastName: "Test5", entries: allEntries, injured: true},
-            {firstName: "Test6", lastName: "Test6", entries: allEntries, injured: true},
-            {firstName: "Test7", lastName: "Test7", entries: allEntries, injured: true}
-          ];
-          */
 
           //Consts
           const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
