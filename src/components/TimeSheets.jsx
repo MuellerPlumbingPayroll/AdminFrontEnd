@@ -152,11 +152,9 @@ class TimeSheets extends React.Component {
     try{
       console.log(JSON.stringify(ids));
       let idsString = JSON.stringify(ids);
-      let startString = JSON.stringify(start);
-      let endString = JSON.stringify(end);
       //console.log(start);
       //console.log(end);
-      const timecards = await axios(`https://api-dot-muller-plumbing-salary.appspot.com/timecards/${idsString}/${startString}/${endString}`);
+      const timecards = await axios(`https://api-dot-muller-plumbing-salary.appspot.com/timecards/${idsString}/${start}/${end}`);
       return timecards.data;
     } catch (e){
       console.error(e);
@@ -180,11 +178,11 @@ class TimeSheets extends React.Component {
         let doc = new jsPDF({orientation: 'landscape'});
         
         for(let m = 0; m < ranges.length; m++){
-          //console.log(await this.getEntries(ranges[m][0], ranges[m][1], ids));
-          //let timecards = await this.getEntries(ranges[m][0], ranges[m][1], ids);
+          console.log(await this.getEntries(ranges[m][0], ranges[m][1], ids));
+          let timecards = await this.getEntries(ranges[m][0], ranges[m][1], ids);
           
           //Test Data
-          let testEntriesSun = [
+          /*let testEntriesSun = [
             {clientName: "Acme", job: "stuff", type: "other", timeworked: 2},
             {clientName: "Bame", job: "stuf2", type: "stuff", timeworked: 2}];
           let testEntriesWed = [
@@ -197,7 +195,7 @@ class TimeSheets extends React.Component {
             {clientName: "Acme", job: "stuff", type: "other", timeworked: 4},
             {clientName: "Bame", job: "stuf2", type: "stuff", timeworked: 4}];
           let allEntries = [testEntriesSun,testEntries,testEntries,testEntriesWed,testEntries,testEntries,testEntriesSat];
-          let testThing = [
+          let timecards = [
             {firstName: "Test1", lastName: "Test1", entries: allEntries, injured: true},
             {firstName: "Test2", lastName: "Test2", entries: allEntries, injured: true},
             {firstName: "Test3", lastName: "Test3", entries: allEntries, injured: true},
@@ -206,6 +204,7 @@ class TimeSheets extends React.Component {
             {firstName: "Test6", lastName: "Test6", entries: allEntries, injured: true},
             {firstName: "Test7", lastName: "Test7", entries: allEntries, injured: true}
           ];
+          */
 
           //Consts
           const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
@@ -221,83 +220,83 @@ class TimeSheets extends React.Component {
             7: {cellWidth: 7},
             8: {cellWidth: 7},
             9: {cellWidth: 7}
-            // etc
           };
 
           //Totalling hours
-          for(let i = 0; i < testThing.length; i++){
+          for(let i = 0; i < timecards.length; i++){
 
             let entryBody = [];
             let hours = [0,0,0,0,0,0,0];
-            for(let k = 0; k < testThing[i]['entries'].length; k++){
-              for(let j = 0; j < testThing[i]['entries'][k].length; j++){
-                let temp = testThing[i]['entries'][k][j];
-                let inner = [];
-                inner.push(temp['clientName']);
-                inner.push(temp['job']);
-                inner.push(temp['type']);
-                if(k === 0){
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(temp['timeworked']);
-                  inner.push(0);
-                  inner.push(0);
-                } else if (k === 1){
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(temp['timeworked']);
-                  inner.push(0);
-                } else if (k === 2){
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(temp['timeworked']);
-                } else if (k === 3){
-                  inner.push(temp['timeworked']);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                } else if (k === 4){
-                  inner.push(0);
-                  inner.push(temp['timeworked']);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                } else if (k === 5){
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(temp['timeworked']);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                } else if (k === 6){
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(temp['timeworked']);
-                  inner.push(0);
-                  inner.push(0);
-                  inner.push(0);
+            if(timecards[i]['entries'] !== null){
+              for(let k = 0; k < timecards[i]['entries'].length; k++){
+                for(let j = 0; j < timecards[i]['entries'][k].length; j++){
+                  let temp = timecards[i]['entries'][k][j];
+                  let inner = [];
+                  inner.push(temp['clientName']);
+                  inner.push(temp['job']);
+                  inner.push(temp['type']);
+                  if(k === 0){
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(temp['timeWorked']);
+                    inner.push(0);
+                    inner.push(0);
+                  } else if (k === 1){
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(temp['timeWorked']);
+                    inner.push(0);
+                  } else if (k === 2){
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(temp['timeWorked']);
+                  } else if (k === 3){
+                    inner.push(temp['timeWorked']);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                  } else if (k === 4){
+                    inner.push(0);
+                    inner.push(temp['timeWorked']);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                  } else if (k === 5){
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(temp['timeWorked']);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                  } else if (k === 6){
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(temp['timeWorked']);
+                    inner.push(0);
+                    inner.push(0);
+                    inner.push(0);
+                  }
+                  hours[k] += temp['timeWorked'];
+                  entryBody.push(inner);
                 }
-                hours[k] += temp['timeworked'];
-                entryBody.push(inner);
               }
             }
-
             if(i !== 0){
               doc.addPage();
             }
@@ -311,9 +310,14 @@ class TimeSheets extends React.Component {
             let dateM = this.goForwardAYear(st,5).getDate() + "-" + monthNames[this.goForwardAYear(st,5).getMonth()];
             let dateTu = this.goForwardAYear(st,6).getDate() + "-" + monthNames[this.goForwardAYear(st,6).getMonth()];
 
-            let injury = testThing[i]['injured'] ? "Yes" : "No";
+            let injury;
+            if(timecards[i]['injured'] === null){
+              injury = "Not Submitted";
+            } else {
+              injury = timecards[i]['injured'] ? "Yes" : "No";
+            }
            
-            doc.text(`${testThing[i]['firstName']} ${testThing[i]['lastName']} ${dateW}-${dateTu}`, 14, 13);
+            doc.text(`${timecards[i]['firstName']} ${timecards[i]['lastName']} ${dateW}-${dateTu}`, 14, 13);
             doc.autoTable({
               head:[['Client','Job / Description', 'Cost Code Description', `Wed ${dateW}`, `Thurs ${dateTh}`,
               `Fri ${dateF}`, `Sat ${dateSa}`, `Sun ${dateSu}`, `Mon ${dateM}`, `Tues ${dateTu}`]],
