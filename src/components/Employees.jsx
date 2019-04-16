@@ -27,6 +27,7 @@ class Employees extends React.Component {
       visible: false,
       email: "",
       activity: false,
+      admin: false,
       users: null,
       updatedRows: [],
       showWarning: false,
@@ -46,6 +47,10 @@ class Employees extends React.Component {
     return rowData.isActive;
   }
 
+  isAdmin = (rowData) => {
+    return rowData.isAdmin;
+  }
+
   componentDidMount = async () =>{
     try{
       const newUsers = await axios('https://api-dot-muller-plumbing-salary.appspot.com/users');
@@ -62,6 +67,27 @@ class Employees extends React.Component {
       this.setState({goInactive: true});
     } else {
       this.setState({goActive: true});
+    }
+  }
+
+   //This function changes the activity of the job in question
+   changeAdmin = (rowData, e) =>{
+    let upemps = [...this.state.users];
+    let ind = this.state.users.indexOf(rowData);
+    if(ind !== -1){
+      if(e.checked){
+        upemps[ind].isAdmin = true;
+      } else {
+        upemps[ind].isAdmin = false;
+      }
+      this.setState({users: upemps});
+      let newUpRows = [...this.state.updatedRows];
+      newUpRows.push(rowData);
+      this.setState({updatedRows: newUpRows});
+      if(this.state.warningShown === false){
+        this.growl.show({severity: 'warn', summary: 'You have unsaved changes', detail:'Please click the "Save Changes" button to save these changes before leaving the page.', closable: false, sticky: true});
+        this.setState({warningShown: true});
+      }
     }
   }
 
@@ -118,9 +144,18 @@ class Employees extends React.Component {
     return <InputText type="text" value={this.state.users[props.rowIndex]['lastName']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 
+   //Changes activity
+  onChanges = (e) => {
+    if(e.checked){
+      this.setState({admin: true});
+    } else {
+      this.setState({admin: false});
+    }
+  }
+
   onHide= () =>{
     this.setState({visible: false});
-    this.setState({email: "", firstName: "", lastName: ""});
+    this.setState({email: "", firstName: "", lastName: "", admin: false});
   }
   
   onHideActive = () => {
@@ -135,7 +170,7 @@ class Employees extends React.Component {
     if(this.state.email !== "" && this.state.firstName !== "" && this.state.lastName !== ""){
       try{
         let url = 'https://api-dot-muller-plumbing-salary.appspot.com/users';
-        let data = {email: `${this.state.email}@gmail.com`, isActive: true, firstName: this.state.firstName, lastName: this.state.lastName};
+        let data = {email: `${this.state.email}@gmail.com`, isActive: true, firstName: this.state.firstName, lastName: this.state.lastName, isAdmin: this.state.admin};
         await axios.post(url, data);
       } catch (e){
         console.error(e);
@@ -147,7 +182,7 @@ class Employees extends React.Component {
         console.error(e);
         this.setState({users: []});
       }
-      this.setState({email: "", firstName: "", lastName: ""});
+      this.setState({email: "", firstName: "", lastName: "", admin: false});
       this.setState({visible: false})
     } else {
       this.setState({emptyFields: true});
@@ -237,6 +272,10 @@ class Employees extends React.Component {
                             <InputText id="in" value={this.state.email} onChange={(e) => this.setState({email: e.target.value})} />
                             <label style={{padding: '10px'}}>@gmail.com</label>
                         </span>  
+                        <span style={{paddingTop:'25px', display: 'block'}}>
+                            <label style={{padding: '10px'}}>Administrative Employee</label>
+                            <Checkbox id="in" checked={this.state.admin} onChange={this.onChanges} />
+                        </span>  
                     </Dialog>
                     <Dialog header="You have unsaved Changes" footer={footer} visible={this.state.showWarning} style={{width: '50vw'}} modal={true} onHide={this.onHideWarning}>
                       <span style={{paddingTop:'25px', display: 'block'}}>
@@ -248,14 +287,16 @@ class Employees extends React.Component {
                   </div>
                   <div>
                     <DataTable value={this.state.users} scrollable={true}scrollHeight="20vw">
-                      <Column field="firstName" header="First Name" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} editor={this.firstEditor}/>
-                      <Column field="lastName" header="Last Name" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} editor={this.lastEditor}/>
-                      <Column field="email" header="Email" filter={true} filterMatchMode={"contains"} filterType={"inputtext"}/>
-                      <Column field="isActive" header="Active " style={{textAlign:'center'}} body={ (rowData, column) => (
+                      <Column field="firstName" header="First Name" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} editor={this.firstEditor} style={{width:'19%'}}/>
+                      <Column field="lastName" header="Last Name" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} editor={this.lastEditor} style={{width:'19%'}}/>
+                      <Column field="email" header="Email" filter={true} filterMatchMode={"contains"} filterType={"inputtext"} style={{width: '32%'}}/>
+                      <Column field="isAdmin" header="Administrative Employee " style={{textAlign:'center',width: '15%'}} body={ (rowData, column) => (
+                          <Checkbox onChange={(e) => {this.changeAdmin(rowData, e)}} checked={this.isAdmin(rowData)} />) }/>
+                      <Column field="isActive" header="Active " style={{textAlign:'center',width: '15%'}} body={ (rowData, column) => (
                         <Checkbox onChange={(e) => {this.changeActive(rowData, e)}} checked={this.isActive(rowData)} />) }/>
                     </DataTable>
                   </div>  
-                  <div className="saveChanges" style={{paddingBottom: '5px'}}>
+                  <div className="saveChanges" style={{paddingTop: '5px'}}>
                     <Button id="saveB" label="Save Changes" className="p-button-success" style={{padding: '5px'}} onClick={this.saveChanges}/>
                   </div>
                 </div>
