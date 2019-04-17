@@ -212,17 +212,24 @@ class Jobs extends React.Component {
   //Parsing the data in the csv file
   saveCSV = () => {
     let data = [...this.state.results];
-    data[0] = ["jobNumber", "clientName", "ig1", "ig2", "ig3", "address", "ig4", "ig5", "isActive", "id"];
+    data.splice(0,3);
+    //data[0] = ["jobNumber", "clientName", "ig1", "ig2", "ig3", "address", "ig4", "ig5", "isActive", "id"];
+    data[0] = ["jobNumber", "clientName", "ig1", "ig2", "ig3", "isActive", "address", "ig4", "ig5", "ig6", "ig7", "id"];
     for(let i = 0; i < data.length; i++){
       //removing unwanted columns
       data[i].splice(2,3);
-      data[i].splice(3,2);
+      data[i].splice(4,4);
       //adding activity and id
+      if(data[i][2] === "A"){
+        data[i][2] = true;
+      } else {
+        data[i][2] = false;
+      }
       if(i !== 0){
-        data[i].push(true);
         data[i].push(null);
       }
     }
+    console.log(data);
     let allData = []
     allData[0] = data[0];
     //Checking that the job number isn't already in use
