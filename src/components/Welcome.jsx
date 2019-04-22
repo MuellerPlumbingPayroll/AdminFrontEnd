@@ -5,7 +5,6 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-light/theme.css';
 import '../stylesheets/vars.scss';
-
 // eslint-disable-next-line no-undef
 
 
@@ -77,7 +76,7 @@ class Welcome extends React.Component {
   }
 
   render() {
-  
+
     const wrapperClass = classNames('layout-wrapper', {
       'layout-static': this.state.layoutMode === 'static',
       'layout-mobile-sidebar-active': this.state.mobileMenuActive,
@@ -86,7 +85,7 @@ class Welcome extends React.Component {
     return (
       <div className={wrapperClass}>
         <div className={mainPart} style={{justifyContent: 'center', alignItems: 'center', borderBottom: '5px'}}>
-            <div style={{paddingBottom: '20px', fontSize: '30px', textAlign: 'center'}}>Welcome, Tanner!</div>
+            <div style={{paddingBottom: '20px', fontSize: '30px', textAlign: 'center'}}>Welcome!</div>
             <div>
                 <h2 style={{textAlign: 'center'}}> Current Pay Period</h2>
                 <div style={{fontSize: '30px', textAlign: 'center'}}>
