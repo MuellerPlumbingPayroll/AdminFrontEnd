@@ -42,12 +42,24 @@ class Jobs extends React.Component {
   }
 
 
+
+  sorting(a,b){
+    if(a['jobNumber'] < b['jobNumber']){
+      return -1;
+    }
+    if(a['jobNumber'] > b['jobNumber']){
+      return 1;
+    }
+    return 0;
+  }
   //This function is run when this component is loaded
   //This function uses a GET request to load all the job information
   componentDidMount = async () =>{
     try{
       const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
-      this.setState({jobs: newJobs.data});
+      let sorted = newJobs.data
+      sorted.sort(this.sorting);
+      this.setState({jobs: sorted});
     } catch (e){
       console.error(e);
       this.setState({jobs: []});
@@ -104,9 +116,19 @@ class Jobs extends React.Component {
     this.setState({jobs: updatedjobs});
   }
 
+  findJobNumber = () => {
+    let unique = true;
+    for(let i = 0; i < this.state.jobs; i++){
+      if(this.state.jobs[i]['jobNumber'] === this.state.jobNumber){
+        unique = false;
+      }
+    }
+    return unique;
+  }
+
   //Adds a job to the database
   onHideYes = async () => {
-    if(this.state.jobNumber !== "" && this.state.client !== "" && this.state.address !== "" && this.state.activity !== null){
+    if(this.state.jobNumber !== "" && this.state.client !== "" && this.state.address !== "" && this.state.activity !== null && this.findJobNumber()){
       try{
         let url = 'https://api-dot-muller-plumbing-salary.appspot.com/jobs';
         let toAdd = []
@@ -117,7 +139,9 @@ class Jobs extends React.Component {
       }
       try{
         const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
-        this.setState({jobs: newJobs.data});
+        let sorted = newJobs.data
+        sorted.sort(this.sorting);
+        this.setState({jobs: sorted});
       } catch (e){
         console.error(e);
         this.setState({jobs: []});
@@ -182,7 +206,9 @@ class Jobs extends React.Component {
       //Refreshing the jobs values
       try{
         const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
-        this.setState({jobs: newJobs.data});
+        let sorted = newJobs.data
+        sorted.sort(this.sorting);
+        this.setState({jobs: sorted});
       } catch (e){
         console.error(e);
         this.setState({jobs: []});
@@ -220,9 +246,9 @@ class Jobs extends React.Component {
       data[i].splice(2,3);
       data[i].splice(4,4);
       //adding activity and id
-      if(data[i][2] === "A"){
+      if(i !== 0 && data[i][2] === "A"){
         data[i][2] = true;
-      } else {
+      } else if(i !== 0){
         data[i][2] = false;
       }
       if(i !== 0){
@@ -255,7 +281,9 @@ class Jobs extends React.Component {
       resJSON.push(hash);
     }
     this.setState({resultsJSON: resJSON});
+    /*
     this.saveToAPI();
+    */
   }
 
   //Adding all data to database
@@ -272,7 +300,9 @@ class Jobs extends React.Component {
     if(success){
       try{
         const newJobs = await axios('https://api-dot-muller-plumbing-salary.appspot.com/jobs');
-        this.setState({jobs: newJobs.data});
+        let sorted = newJobs.data
+        sorted.sort(this.sorting);
+        this.setState({jobs: sorted});
         this.setState({showFileSuccess: true});
       } catch (e){
         this.setState({showFileWarning: true});

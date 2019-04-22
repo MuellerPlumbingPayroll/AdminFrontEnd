@@ -7,12 +7,14 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { Dialog } from 'primereact/dialog';
 import { Checkbox } from 'primereact/checkbox';
+import { downloadCSV } from 'react-admin';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-light/theme.css';
 import '../stylesheets/vars.scss';
 import axios from 'axios';
 import jsPDF from 'jspdf';
+import Papa from 'papaparse';
 import 'jspdf-autotable';
 
 // eslint-disable-next-line no-undef
@@ -159,6 +161,107 @@ class TimeSheets extends React.Component {
     } catch (e){
       console.error(e);
       return ["nothing", "actually nothing"];
+    }
+  }
+
+  checkCSVDownload = async () => {
+    if(this.state.selected.length === 0){
+      this.setState({errorEmps: true});
+    } else if((this.state.startDate === null) || (this.state.endDate === null)){
+      this.setState({errorDate: true});
+    } else {
+      let ids = []
+      for(let i = 0; i < this.state.selected.length; i++){
+        ids.push(this.state.selected[i]['id']);
+      }
+      let ranges = this.findPayPeriods(this.state.startDate, this.state.endDate);
+      if(ranges !== null){
+
+        let overAllRanges = [];
+        //Header row should be name, clientname, job, type, date, hours
+        let fields = ["Name", "Client", "Job Number", "Job", "Type", "Date", "Time Worked (Hrs)"];
+        for(let m = 0; m < ranges.length; m++){
+          console.log(await this.getEntries(ranges[m][0], ranges[m][1], ids));
+          let timecards = await this.getEntries(ranges[m][0], ranges[m][1], ids);
+
+          //Consts
+          const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
+          "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+          let st = ranges[m][0];
+          let dateW = st.getMonth()+1 + "/" + st.getDate() + "/" + st.getFullYear();
+          
+          let thurs = this.goForwardAYear(st,1);
+          let dateTh = thurs.getMonth()+1 + "/" + thurs.getDate() + "/" + thurs.getFullYear();
+
+          let fri = this.goForwardAYear(st,2);
+          let dateF = fri.getMonth()+1 + "/" + fri.getDate() + "/" + fri.getFullYear();
+
+          let sat = this.goForwardAYear(st,3);
+          let dateSa = sat.getMonth()+1 + "/" + sat.getDate() + "/" + sat.getFullYear();
+
+          let sun = this.goForwardAYear(st,4);
+          let dateSu = sun.getMonth()+1 + "/" + sun.getDate() + "/" + sun.getFullYear();
+
+          let mon = this.goForwardAYear(st,5);
+          let dateM = mon.getMonth()+1 + "/" + mon.getDate() + "/" + mon.getFullYear();
+
+          let tue = this.goForwardAYear(st,6);
+          let dateTu = tue.getMonth()+1 + "/" + tue.getDate() + "/" + tue.getFullYear();
+
+
+          //Totalling hours
+          for(let i = 0; i < timecards.length; i++){
+
+            if(timecards[i]['entries'] !== null){
+              for(let k = 0; k < timecards[i]['entries'].length; k++){
+                for(let j = 0; j < timecards[i]['entries'][k].length; j++){
+                  let temp = timecards[i]['entries'][k][j];
+                  let inner = [];
+                  inner.push(`${timecards[i]['firstName']} ${timecards[i]['lastName']}`);
+                  inner.push(temp['clientName']);
+                  inner.push(temp['jobNumber']);
+                  inner.push(temp['job']);
+                  inner.push(temp['type']);
+                  if(k === 0){
+                    inner.push(dateSu);
+                    inner.push(temp['timeWorked']);
+                  } else if (k === 1){
+                    inner.push(dateM);
+                    inner.push(temp['timeWorked']);
+                  } else if (k === 2){
+                    inner.push(dateTu);
+                    inner.push(temp['timeWorked']);
+                  } else if (k === 3){
+                    inner.push(dateW);
+                    inner.push(temp['timeWorked']);
+                  } else if (k === 4){
+                    inner.push(dateTh);
+                    inner.push(temp['timeWorked']);
+                  } else if (k === 5){
+                    inner.push(dateF);
+                    inner.push(temp['timeWorked']);
+                  } else if (k === 6){
+                    inner.push(dateSa);
+                    inner.push(temp['timeWorked']);
+                  }
+                  overAllRanges.push(inner);
+                }
+              }
+            }
+          } 
+        }
+        let csvFormat = Papa.unparse({
+          "fields": fields,
+          "data": overAllRanges
+        });
+        
+        
+        let start = (this.state.startDate.getMonth()+1) + "-" + this.state.startDate.getDate() + "-" + this.state.startDate.getFullYear();
+        let end = (this.state.endDate.getMonth()+1) + "-" + this.state.endDate.getDate() + "-" + this.state.endDate.getFullYear();
+        downloadCSV(csvFormat, `TimeEntries${start}-${end}`);
+        
+      }
     }
   }
 
@@ -375,7 +478,8 @@ class TimeSheets extends React.Component {
                   <Button id="lastFin" label="Last Finished Pay Period" className="p-button-primary" onClick={this.lastPayPeriod}/>
                 </div>
                 <div style={{paddingBottom: '5px', paddingTop: '5px'}}>
-                  <Button id="download" label="Download Time Sheets" className="p-button-success" onClick={this.checkDownload}/>
+                  <Button id="downloadPDF" label="Download Time Sheets PDF file" className="p-button-success" onClick={this.checkDownload}/>
+                  <Button id="downloadcsv" label="Download Time Entries CSV file" className="p-button-success" onClick={this.checkCSVDownload} style={{marginLeft: '5px'}}/>
                   <Dialog header="You have not selected any Employees" visible={this.state.errorEmps} style={{width: '50vw'}} modal={true} onHide={(e) => this.setState({errorEmps: false})}>
                     Please either select employees individually or click the button "All employees"
                   </Dialog>

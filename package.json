@@ -23,6 +23,7 @@
     "primeicons": "^1.0.0",
     "primereact": "^3.0.0",
     "react": "^16.7.0",
+    "react-admin": "^2.8.5",
     "react-dom": "^16.7.0",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^2.1.5",
@@ -52,12 +53,12 @@
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/MuellerPlumbingPayroll/AdminFrontEnd.git"
+    "url": "git+https://github.com/MullerPlumbingPayroll/AdminFrontEnd.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/MuellerPlumbingPayroll/AdminFrontEnd/issues"
+    "url": "https://github.com/MullerPlumbingPayroll/AdminFrontEnd/issues"
   },
-  "homepage": "https://github.com/MuellerPlumbingPayroll/AdminFrontEnd#readme"
+  "homepage": "https://github.com/MullerPlumbingPayroll/AdminFrontEnd#readme"
 }
