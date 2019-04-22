@@ -5,8 +5,6 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primereact/resources/themes/nova-light/theme.css';
 import '../stylesheets/vars.scss';
-import firebase from "firebase/app";
-import "firebase/auth";
 // eslint-disable-next-line no-undef
 
 
