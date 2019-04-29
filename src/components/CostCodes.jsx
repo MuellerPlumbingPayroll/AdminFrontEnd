@@ -144,8 +144,13 @@ class CostCodes extends React.Component {
   }
 
   onEditorValueChange = (props, value) => {
+    console.log(value);
+    let newValue = value;
+    if(value['value'] !== null){
+      newValue = value.value;
+    }
     let updatedcodes = [...this.state.codes];
-    updatedcodes[props.rowIndex][props.field] = value;
+    updatedcodes[props.rowIndex][props.field] = newValue;
     let notAdded = true;
     for(let i = 0; i < this.state.updatedRows.length; i++){
       if(this.state.updatedRows[i]['id'] === updatedcodes[props.rowIndex]['id']){
@@ -170,15 +175,24 @@ class CostCodes extends React.Component {
   }
 
   groupEditor = (props) => {
-    return <InputText type="text" value={this.state.codes[props.rowIndex]['codeGroup']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
+    const codeGroups = [
+        {name: 'Plumbing', value: 'Plumbing'},
+        {name: 'Service', value: 'Service'},
+        {name: 'Heating', value: 'Heating'},
+        {name: 'Shop', value: 'Shop'}
+    ];
+    return <Dropdown value={this.state.codes[props.rowIndex]['codeGroup']} options={codeGroups} onChange={(e) => this.onEditorValueChange(props, e.value)} placeholder="Select a Group" optionLabel='name'/>
+    //return <InputText type="text" value={this.state.codes[props.rowIndex]['codeGroup']} onChange={(e) => this.onEditorValueChange(props, e.target.value)} />;
   }
 
 
   render() {
 
     const codeGroups = [
-        {name: 'Plumbing', value: 'PLUMBING'},
-        {name: 'Service', value: 'SERVICE'}
+        {name: 'Plumbing', value: 'Plumbing'},
+        {name: 'Service', value: 'Service'},
+        {name: 'Heating', value: 'Heating'},
+        {name: 'Shop', value: 'Shop'}
     ];
   
     const wrapperClass = classNames('layout-wrapper', {
