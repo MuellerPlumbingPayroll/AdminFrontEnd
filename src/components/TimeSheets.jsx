@@ -73,25 +73,40 @@ class TimeSheets extends React.Component {
     return rowData.isActive;
   }
 
+
+
   findPayPeriods = (starting, ending) => {
     if(starting.getDay() !== 3 || ending.getDay() !== 2){
       console.log("Wrong dates");
     } else {
+      console.log(starting.getTimezoneOffset());
+      let hoursStart, hoursEnd;
+      if(starting.getTimezoneOffset() == 300){
+        hoursStart = 2;
+        hoursEnd = 1;
+      } else {
+        hoursStart = 1;
+        hoursEnd = 0;
+      }
       let dates = [];
-      let currentDate = this.goForwardAYear(starting, 6);
-      currentDate.setHours(23,59,59);
+      let currentDate = this.goForwardAYear(starting, 7);
+      currentDate.setHours(hoursEnd,59,59);
+      starting.setHours(hoursStart,0,0);
       let newDates = [starting, currentDate];
       dates.push(newDates);
-      ending.setHours(23,59,59);
+      let newEnding = this.goForwardAYear(ending, 1);
+      newEnding.setHours(hoursEnd,59,59);
       let counter = 0;
-      while(currentDate.getTime() !== ending.getTime() && counter < 5){
-        let newStart = this.goForwardAYear(currentDate,1);
-        currentDate = this.goForwardAYear(newStart, 6);
-        currentDate.setHours(23,59,59);
+      while(currentDate.getTime() !== newEnding.getTime() && counter < 5){
+        let newStart = currentDate;
+        newStart.setHours(hoursStart,0,0);
+        currentDate = this.goForwardAYear(newStart, 7);
+        currentDate.setHours(hoursEnd,59,59);
         let range = [newStart,currentDate];
         dates.push(range);
         counter++;
       }
+      console.log(dates);
       return dates;
     }
     return null;
@@ -183,10 +198,6 @@ class TimeSheets extends React.Component {
         for(let m = 0; m < ranges.length; m++){
           console.log(await this.getEntries(ranges[m][0], ranges[m][1], ids));
           let timecards = await this.getEntries(ranges[m][0], ranges[m][1], ids);
-
-          //Consts
-          const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "June",
-          "July", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
           let st = ranges[m][0];
           let dateW = st.getMonth()+1 + "/" + st.getDate() + "/" + st.getFullYear();
