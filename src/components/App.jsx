@@ -27,7 +27,7 @@ firebase.initializeApp(config);
 firebase.auth().onAuthStateChanged(async function(user) {
   if (user) {
     try{
-      let result = await axios(`https://api-dot-muller-plumbing-salary.appspot.com/authenticate/admin/${user.email}`)
+      await axios(`https://api-dot-muller-plumbing-salary.appspot.com/authenticate/admin/${user.email}`)
       axios.defaults.headers.common = {'Authorization': `bearer ${await user.getIdToken(true)}`}
     }catch(e){
       alert("User not authorized as an admin")
